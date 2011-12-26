@@ -27,12 +27,13 @@ struct byteArray *allocBarr(size_t size){
 
 int main(int arfc, char* *arfv){
 	char *str;
-	str = (char*) poolAlloc(4);
+	struct byteArray *mem = allocBarr(4);
+	str = mem->arr;
 	str[0] = 'o';
 	str[1] = 'k';
 	str[2] = '\n';
 	str[3] = 0;
 	printf("%s", str);
-	poolFree(str);
+	freeBarr(mem);
 	return 0;
 }
