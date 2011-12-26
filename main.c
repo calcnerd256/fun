@@ -26,6 +26,8 @@ struct byteArray *allocBarr(size_t size){
 }
 
 int main(int arfc, char* *arfv){
+	char *str;
+	str = (char*) poolAlloc(4);
 	printf("%s", "ok\n");
 	return 0;
 }
