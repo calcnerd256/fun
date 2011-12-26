@@ -33,5 +33,6 @@ int main(int arfc, char* *arfv){
 	str[2] = '\n';
 	str[3] = 0;
 	printf("%s", str);
+	poolFree(str);
 	return 0;
 }
