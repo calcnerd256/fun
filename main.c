@@ -32,6 +32,6 @@ int main(int arfc, char* *arfv){
 	str[1] = 'k';
 	str[2] = '\n';
 	str[3] = 0;
-	printf("%s", "ok\n");
+	printf("%s", str);
 	return 0;
 }
