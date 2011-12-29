@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 struct byteArray{
 	size_t size;
 	char* arr;
@@ -31,10 +32,27 @@ struct byteArray *allocBarr(size_t size){
 	return referenceBarr(size, poolAlloc(size));
 }
 
+struct byteArray *argsToBarr(int arfc, char* *arfv){
+	int i, len;
+	struct byteArray *result = allocBarr(arfc * sizeof(struct byteArray*));
+	for(i = 0; i < arfc; i++){
+		len = strlen(arfv[i]);
+		((struct byteArray**)(result->arr))[i] = referenceBarr(len, arfv[i]);
+	}
+	return result;
+}
+void freeArgsBarr(struct byteArray *args){
+	int i;
+	for(i = 0; i < args->size / sizeof(struct byteArray*); i++)
+		freeRbarr(((struct byteArray**)(args->arr))[i]);
+	freeBarr(args);
+}
 
 int main(int arfc, char* *arfv){
-	struct byteArray *mem = referenceBarr(4, "ok\n");
-	printf("%s", mem->arr);
+	int i;
+	struct byteArray *mem = argsToBarr(arfc, arfv);//referenceBarr(4, "ok\n");
+	for(i = 0; i < mem->size / sizeof(struct byteArray*); i++)
+		printf("%s\n", ((struct byteArray**)(mem->arr))[i]->arr);
 	freeRbarr(mem);
 	return 0;
 }
