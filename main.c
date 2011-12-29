@@ -39,7 +39,7 @@ struct byteArray *allocBarr(size_t size){
 }
 
 struct byteArray *strToRbarr(char *str){
-	return referenceBarr(strlen(str), str);
+	return referenceBarr(strlen(str) - 1, str);
 }
 struct byteArray *argsToBarr(int arfc, char* *arfv){
 	int i;
