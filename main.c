@@ -47,7 +47,7 @@ struct byteArray *argsToBarr(int arfc, char* *arfv){
 	struct byteArray *result = allocBarr(arfc * sizeof(struct byteArray*));
 	rbarrs = (struct byteArray**)(result->arr);
 	for(i = 0; i < arfc; i++)
-		barrs[i] = strToRbarr(arfv[i]);
+		rbarrs[i] = strToRbarr(arfv[i]);
 	return result;
 }
 void freeArgsBarr(struct byteArray *args){
@@ -59,9 +59,9 @@ void freeArgsBarr(struct byteArray *args){
 
 int barrMain(struct byteArray *args){
 	int i, len;
-	struct byteArray rbarrs;
+	struct byteArray* *rbarrs;
 	len = args->size / sizeof(struct byteArray*);
-	barrs = (struct byteArray**)(args->arr);
+	rbarrs = (struct byteArray**)(args->arr);
 	for(i = 0; i < len; i++)
 		printf("%s\n", rbarrs[i]->arr);
 	return 0;
@@ -71,6 +71,6 @@ int main(int arfc, char* *arfv){
 	int result;
 	struct byteArray *args = argsToBarr(arfc, arfv);
 	result = barrMain(args);
-	freeRbarr(args);
+	freeArgsBarr(args);
 	return result;
 }
