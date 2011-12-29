@@ -53,17 +53,19 @@ void freeArgsBarr(struct byteArray *args){
 }
 
 int barrMain(struct byteArray *args){
+	int i;
 	for(i = 0; i < args->size / sizeof(struct byteArray*); i++)
 		printf(
 			"%s\n",
 			((struct byteArray**)(args->arr))[i]->arr
 		);
+	return 0;
 }
 
 int main(int arfc, char* *arfv){
-	int i;
+	int result;
 	struct byteArray *args = argsToBarr(arfc, arfv);
-	barrMain(args);
+	result = barrMain(args);
 	freeRbarr(args);
-	return 0;
+	return result;
 }
