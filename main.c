@@ -39,7 +39,12 @@ struct byteArray *allocBarr(size_t size){
 }
 
 struct byteArray *strToRbarr(char *str){
-	return referenceBarr(strlen(str) - 1, str);
+	return referenceBarr(strlen(str), str);
+}
+void printBarr(struct byteArray *barr){
+	int i;
+	for(i = 0; i < barr->size; i++)
+		printf("%c", barr->arr[i]);
 }
 struct byteArray *argsToBarr(int arfc, char* *arfv){
 	int i;
@@ -62,8 +67,12 @@ int barrMain(struct byteArray *args){
 	struct byteArray* *rbarrs;
 	len = args->size / sizeof(struct byteArray*);
 	rbarrs = (struct byteArray**)(args->arr);
-	for(i = 0; i < len; i++)
-		printf("%s\n", rbarrs[i]->arr);
+	for(i = 0; i < len; i++){
+		printBarr(rbarrs[i]);
+		if(i+1 < len)
+			printf(" ");
+	}
+	printf("\n");
 	return 0;
 }
 
