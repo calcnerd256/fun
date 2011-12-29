@@ -39,12 +39,10 @@ struct byteArray *allocBarr(size_t size){
 }
 
 struct byteArray *argsToBarr(int arfc, char* *arfv){
-	int i, len;
+	int i;
 	struct byteArray *result = allocBarr(arfc * sizeof(struct byteArray*));
-	for(i = 0; i < arfc; i++){
-		len = strlen(arfv[i]);
-		((struct byteArray**)(result->arr))[i] = referenceBarr(len, arfv[i]);
-	}
+	for(i = 0; i < arfc; i++)
+		((struct byteArray**)(result->arr))[i] = referenceBarr(strlen(arfv[i]), arfv[i]);
 	return result;
 }
 void freeArgsBarr(struct byteArray *args){
@@ -54,11 +52,18 @@ void freeArgsBarr(struct byteArray *args){
 	freeBarr(args);
 }
 
+int barrMain(struct byteArray *args){
+	for(i = 0; i < args->size / sizeof(struct byteArray*); i++)
+		printf(
+			"%s\n",
+			((struct byteArray**)(args->arr))[i]->arr
+		);
+}
+
 int main(int arfc, char* *arfv){
 	int i;
-	struct byteArray *mem = argsToBarr(arfc, arfv);//referenceBarr(4, "ok\n");
-	for(i = 0; i < mem->size / sizeof(struct byteArray*); i++)
-		printf("%s\n", ((struct byteArray**)(mem->arr))[i]->arr);
-	freeRbarr(mem);
+	struct byteArray *args = argsToBarr(arfc, arfv);
+	barrMain(args);
+	freeRbarr(args);
 	return 0;
 }
