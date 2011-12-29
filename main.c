@@ -14,7 +14,7 @@ void *poolAlloc(size_t size){
 	return malloc(size);//for now
 }
 
-void clearBarr(struct byteArray *arr){
+void freeRbarr(struct byteArray *arr){
 	poolFree(arr);
 }
 struct byteArray *referenceBarr(size_t size, void* ptr){
@@ -25,7 +25,7 @@ struct byteArray *referenceBarr(size_t size, void* ptr){
 }
 void freeBarr(struct byteArray *arr){
 	poolFree(arr->arr);//TODO: check error value
-	clearBarr(arr);
+	freeRbarr(arr);
 }
 struct byteArray *allocBarr(size_t size){
 	return referenceBarr(size, poolAlloc(size));
@@ -33,14 +33,8 @@ struct byteArray *allocBarr(size_t size){
 
 
 int main(int arfc, char* *arfv){
-	char *str;
-	struct byteArray *mem = allocBarr(4);
-	str = mem->arr;
-	str[0] = 'o';
-	str[1] = 'k';
-	str[2] = '\n';
-	str[3] = 0;
-	printf("%s", str);
-	freeBarr(mem);
+	struct byteArray *mem = referenceBarr(4, "ok\n");
+	printf("%s", mem->arr);
+	freeRbarr(mem);
 	return 0;
 }
