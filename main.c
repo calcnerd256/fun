@@ -14,16 +14,23 @@ void *poolAlloc(size_t size){
 	return malloc(size);//for now
 }
 
-void freeBarr(struct byteArray *arr){
-	poolFree(arr->arr);//TODO: check error value
+void clearBarr(struct byteArray *arr){
 	poolFree(arr);
 }
-struct byteArray *allocBarr(size_t size){
+struct byteArray *referenceBarr(size_t size, void* ptr){
 	struct byteArray *result = (struct byteArray*) poolAlloc(sizeof(struct byteArray));
-	result->arr = poolAlloc(size);
 	result->size = size;
+	result->arr = ptr;
 	return result;
 }
+void freeBarr(struct byteArray *arr){
+	poolFree(arr->arr);//TODO: check error value
+	clearBarr(arr);
+}
+struct byteArray *allocBarr(size_t size){
+	return referenceBarr(size, poolAlloc(size));
+}
+
 
 int main(int arfc, char* *arfv){
 	char *str;
