@@ -1,6 +1,12 @@
-#include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
+
+//stdlib.h
+extern void free(void*);
+extern void* malloc(size_t);
+
+//string.h
+extern size_t strlen(char*);
+
 struct byteArray{
 	size_t size;
 	char* arr;
