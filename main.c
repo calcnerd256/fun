@@ -59,14 +59,11 @@ void freeArgsBarr(struct byteArray *args){
 
 int barrMain(struct byteArray *args){
 	int i, len;
-	struct byteArray barrs;
+	struct byteArray rbarrs;
 	len = args->size / sizeof(struct byteArray*);
 	barrs = (struct byteArray**)(args->arr);
 	for(i = 0; i < len; i++)
-		printf(
-			"%s\n",
-			barrs[i]->arr
-		);
+		printf("%s\n", rbarrs[i]->arr);
 	return 0;
 }
 
