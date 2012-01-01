@@ -117,6 +117,9 @@ void* tcType(struct byteArray *tc){
 int tcConsp(struct byteArray *tc){
 	return pair == tcType(tc);
 }
+int tcAtomp(struct byteArray *tc){
+	return leaf == tcType(tc);
+}
 void* tcValue(struct byteArray *tc){
 	if(!tc) return 0;
 	if(error == tc) return error;
@@ -136,29 +139,36 @@ struct byteArray* tcCdr(struct byteArray *tc){
 	if(!tcConsp(tc)) return error;
 	return bcdr(tcVal);
 }
-void tcFree(struct byteArray *tc){
-	if(tcConsp(tc)){
-		tcFree(tcCar(tc));
-		tcFree(tcCdr(tc));
+void tcFreeTree(struct byteArray *tc){
+	struct byteArray* stack = 0;
+	struct byteArray* ptr;
+	stack = simpleCons(tc, stack);
+	while(stack){
+		tc = bcar(stack);
+		ptr = bcdr(stack);
+		freeBarr(stack);
+		stack = ptr;
+		if(tcConsp(tc)){
+			stack = simpleCons(tcCar(tc), stack);
+			stack = simpleCons(tcCdr(tc), stack);
+		}
+		freeBarr(tc);
 	}
-	freeBarr(tc);
 }
 
 void *iota;
 int barrMain(struct byteArray *arfs){
 
-	struct byteArray *test = simpleCons(pair, simpleCons(simpleCons(leaf, leaf), simpleCons(leaf, (void*)0)));
-	if(leaf == tcType(tcCdr(test)))
+	struct byteArray *test = simpleCons(pair, simpleCons(simpleCons(pair, simpleCons(simpleCons(leaf, leaf), simpleCons(leaf, leaf))), simpleCons(leaf, (void*)0)));
+	if(tcAtomp(tcCdr(test)))
 		if(0 == (void*)tcValue(tcCdr(test)))
 			printf("tc cdr is leaf null\n");
-	if(leaf == tcType(tcCar(test)))
+	if(tcAtomp(tcCar(test)))
 		if(leaf == (void*)tcValue(tcCar(test)))
 			printf("tc car is leaf leaf\n");
 	if(tcConsp(test));
 		printf("tc type is pair\n");
-	freeBarr(tcCdr(test));
-	freeBarr(tcCar(test));
-	freeBarr(test);
+	tcFreeTree(test);
 
 	while(arfs){
 		printf("%s", (char*)car(arfs->arr));
@@ -172,8 +182,15 @@ int barrMain(struct byteArray *arfs){
 	return 0;
 }
 
+void pointAtSelf(void* *ptr){
+	*ptr = ptr;
+}
 int main(int arfc, char* *arfv){
 	int result;
+	pointAtSelf(&leaf);
+	pointAtSelf(&pair);
+	pointAtSelf(&error);
+	pointAtSelf(&iota);
 	struct byteArray *arfs = ptrArrToPcbl(arfc, (void**)arfv);
 	result = barrMain(arfs);
 	freePcbl(arfs);
