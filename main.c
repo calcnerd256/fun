@@ -136,19 +136,26 @@ struct byteArray* tcCdr(struct byteArray *tc){
 	if(!tcConsp(tc)) return error;
 	return bcdr(tcVal);
 }
+void tcFree(struct byteArray *tc){
+	if(tcConsp(tc)){
+		tcFree(tcCar(tc));
+		tcFree(tcCdr(tc));
+	}
+	freeBarr(tc);
+}
 
 void *iota;
 int barrMain(struct byteArray *arfs){
 
 	struct byteArray *test = simpleCons(pair, simpleCons(simpleCons(leaf, leaf), simpleCons(leaf, (void*)0)));
 	if(leaf == tcType(tcCdr(test)))
-		if(0 == (void*)bcdr(tcCdr(test)))
-			printf("cddr is (cons leaf null)\n");
+		if(0 == (void*)tcValue(tcCdr(test)))
+			printf("tc cdr is leaf null\n");
 	if(leaf == tcType(tcCar(test)))
-		if(leaf == (void*)bcdr(tcCar(test)))
-			printf("cadr is (cons leaf leaf)\n");
-	if(pair == tcType(test));
-		printf("car is pair\n");
+		if(leaf == (void*)tcValue(tcCar(test)))
+			printf("tc car is leaf leaf\n");
+	if(tcConsp(test));
+		printf("tc type is pair\n");
 	freeBarr(tcCdr(test));
 	freeBarr(tcCar(test));
 	freeBarr(test);
