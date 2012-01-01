@@ -103,10 +103,7 @@ void freePcbl(struct byteArray *arr){
 }
 
 void *iota;
-int barrMain(struct byteArray *args, struct byteArray *arhs, struct byteArray *arfs){
-	int i, len;
-	struct byteArray* *rbarrs;
-
+int barrMain(struct byteArray *arhs, struct byteArray *arfs){
 	while(arhs){
 		printBarr((struct byteArray*)car(arhs->arr));
 		arhs = (struct byteArray*)cdr(arhs->arr);
@@ -122,15 +119,6 @@ int barrMain(struct byteArray *args, struct byteArray *arhs, struct byteArray *a
 	}
 	printf("\n");
 
-	len = args->size / sizeof(struct byteArray*);
-	rbarrs = (struct byteArray**)(args->arr);
-
-	for(i = 0; i < len; i++){
-		printBarr(rbarrs[i]);
-		if(i+1 < len)
-			printf(" ");
-	}
-	printf("\n");
 
 	return 0;
 }
@@ -140,7 +128,7 @@ int main(int arfc, char* *arfv){
 	struct byteArray *args = argsToBarr(arfc, arfv);
 	struct byteArray *arhs = ptrBarrToPcbl(args);
 	struct byteArray *arfs = ptrArrToPcbl(arfc, (void**)arfv);
-	result = barrMain(args, arhs, arfs);
+	result = barrMain(arhs, arfs);
 	freePcbl(arhs);
 	freeArgsBarr(args);
 	freePcbl(arfs);
