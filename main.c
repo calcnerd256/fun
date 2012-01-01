@@ -108,21 +108,41 @@ struct byteArray* bcdr(struct byteArray *cell){
 	return (struct byteArray*)cdr(cell->arr);
 }
 
-void *iota;
 void *leaf;
 void *pair;
+void *error;
+void* tcType(struct byteArray *tc){
+	return (void*)bcar(tc);
+}
+int tcConsp(struct byteArray *tc){
+	return pair == tcType(tc);
+}
+struct byteArray* tcCar(struct byteArray *tc){
+	if(!tc) return 0;
+	if(error == tc) return error;
+	if(!tcConsp(tc)) return error;
+	return bcar(bcdr(tc));
+}
+struct byteArray* tcCdr(struct byteArray *tc){
+	if(!tc) return 0;
+	if(error == tc) return error;
+	if(!tcConsp(tc)) return error;
+	return bcdr(bcdr(tc));
+}
+
+void *iota;
 int barrMain(struct byteArray *arfs){
 
 	struct byteArray *test = simpleCons(pair, simpleCons(simpleCons(leaf, leaf), simpleCons(leaf, (void*)0)));
-	if(leaf == (void*)bcar(bcdr(bcdr(test))))
+	if(leaf == tcType(bcdr(bcdr(test))))
 		if(0 == (void*)bcdr(bcdr(bcdr(test))))
 			printf("cddr is (cons leaf null)\n");
 	freeBarr(bcdr(bcdr(test)));
-	if(leaf == (void*)bcar(bcar(bcdr(test))))
+	if(leaf == tcType(bcar(bcdr(test))))
 		if(leaf == (void*)bcdr(bcar(bcdr(test))))
 			printf("cadr is (cons leaf leaf)\n");
 	freeBarr(bcar(bcdr(test)));
-	if(pair == (void*)bcar(test));
+	if(pair == tcType(test));
 		printf("car is pair\n");
 	freeBarr(test);
 
