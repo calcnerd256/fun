@@ -101,9 +101,31 @@ void freePcbl(struct byteArray *arr){
 		arr = tail;
 	}
 }
+struct byteArray* bcar(struct byteArray *cell){
+	return (struct byteArray*)car(cell->arr);
+}
+struct byteArray* bcdr(struct byteArray *cell){
+	return (struct byteArray*)cdr(cell->arr);
+}
 
 void *iota;
+void *leaf;
+void *pair;
 int barrMain(struct byteArray *arfs){
+
+	struct byteArray *test = simpleCons(pair, simpleCons(simpleCons(leaf, leaf), simpleCons(leaf, (void*)0)));
+	if(leaf == (void*)bcar(bcdr(bcdr(test))))
+		if(0 == (void*)bcdr(bcdr(bcdr(test))))
+			printf("cddr is (cons leaf null)\n");
+	freeBarr(bcdr(bcdr(test)));
+	if(leaf == (void*)bcar(bcar(bcdr(test))))
+		if(leaf == (void*)bcdr(bcar(bcdr(test))))
+			printf("cadr is (cons leaf leaf)\n");
+	freeBarr(bcar(bcdr(test)));
+	if(pair == (void*)bcar(test));
+		printf("car is pair\n");
+	freeBarr(test);
+
 	while(arfs){
 		printf("%s", (char*)car(arfs->arr));
 		arfs = (struct byteArray*)cdr(arfs->arr);
