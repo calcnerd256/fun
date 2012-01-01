@@ -73,6 +73,32 @@ struct byteArray *simpleCons(void *head, void *tail){
 	cell->tail = tail;
 	return result;
 }
+struct consCell *car(char *cell){
+	return (struct consCell*)(
+		((struct consCell*)cell)->head
+	);
+}
+struct consCell *cdr(char *cell){
+	return (struct consCell*)(
+		((struct consCell*)cell)->tail
+	);
+}
+struct byteArray *ptrBarrToConsBarrList(struct byteArray *arr){
+	void* *ptr = (void**)(arr->arr);
+	int len = arr->size / sizeof(void*);
+	struct byteArray *result = 0;
+	while(len)
+		result = simpleCons(ptr[--len], (void*)result); 
+	return result;
+}
+void freePtrConsBarrList(struct byteArray *arr){
+	struct byteArray *tail;
+	while(arr){
+		tail = (struct byteArray*)cdr(arr->arr);
+		freeBarr(arr);
+		arr = tail;
+	}
+}
 
 void *iota;
 int barrMain(struct byteArray *args){
@@ -83,7 +109,9 @@ int barrMain(struct byteArray *args){
 	rbarrs = (struct byteArray**)(args->arr);
 
 	struct byteArray *cell = simpleCons(0, 0);
-	freeBarr(cell);
+	struct byteArray *other = simpleCons(0, cell);
+	freeBarr((struct byteArray*)cdr(other->arr));
+	freeBarr(other);
 
 	for(i = 0; i < len; i++){
 		printBarr(rbarrs[i]);
