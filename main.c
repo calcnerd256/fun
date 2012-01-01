@@ -113,6 +113,34 @@ int barrMain(struct byteArray *args){
 	freeBarr((struct byteArray*)cdr(other->arr));
 	freeBarr(other);
 
+	freePtrConsBarrList(
+		simpleCons(
+			(void*)0,
+			simpleCons(
+				(void*)1,
+				simpleCons(
+					(void*)2,
+					simpleCons(
+						(void*)3,
+						(void*)0
+					)
+				)
+			)
+		)
+	);
+	struct byteArray *arfs = ptrBarrToConsBarrList(args);
+	struct byteArray *ptr = arfs;
+	while(ptr){
+		printBarr((struct byteArray*)car(ptr->arr));
+		ptr = (struct byteArray*)cdr(ptr->arr);
+		if(ptr)
+			printf(" ");
+	}
+	printf("\n");
+	freePtrConsBarrList(
+		arfs
+	);
+
 	for(i = 0; i < len; i++){
 		printBarr(rbarrs[i]);
 		if(i+1 < len)
