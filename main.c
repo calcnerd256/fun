@@ -101,45 +101,20 @@ void freePtrConsBarrList(struct byteArray *arr){
 }
 
 void *iota;
-int barrMain(struct byteArray *args){
+int barrMain(struct byteArray *args, struct byteArray *arfs){
 	int i, len;
 	struct byteArray* *rbarrs;
 
-	len = args->size / sizeof(struct byteArray*);
-	rbarrs = (struct byteArray**)(args->arr);
-
-	struct byteArray *cell = simpleCons(0, 0);
-	struct byteArray *other = simpleCons(0, cell);
-	freeBarr((struct byteArray*)cdr(other->arr));
-	freeBarr(other);
-
-	freePtrConsBarrList(
-		simpleCons(
-			(void*)0,
-			simpleCons(
-				(void*)1,
-				simpleCons(
-					(void*)2,
-					simpleCons(
-						(void*)3,
-						(void*)0
-					)
-				)
-			)
-		)
-	);
-	struct byteArray *arfs = ptrBarrToConsBarrList(args);
-	struct byteArray *ptr = arfs;
-	while(ptr){
-		printBarr((struct byteArray*)car(ptr->arr));
-		ptr = (struct byteArray*)cdr(ptr->arr);
-		if(ptr)
+	while(arfs){
+		printBarr((struct byteArray*)car(arfs->arr));
+		arfs = (struct byteArray*)cdr(arfs->arr);
+		if(arfs)
 			printf(" ");
 	}
 	printf("\n");
-	freePtrConsBarrList(
-		arfs
-	);
+
+	len = args->size / sizeof(struct byteArray*);
+	rbarrs = (struct byteArray**)(args->arr);
 
 	for(i = 0; i < len; i++){
 		printBarr(rbarrs[i]);
@@ -154,7 +129,9 @@ int barrMain(struct byteArray *args){
 int main(int arfc, char* *arfv){
 	int result;
 	struct byteArray *args = argsToBarr(arfc, arfv);
-	result = barrMain(args);
+	struct byteArray *arfs = ptrBarrToConsBarrList(args);
+	result = barrMain(args, arfs);
+	freePtrConsBarrList(arfs);
 	freeArgsBarr(args);
 	return result;
 }
