@@ -62,13 +62,28 @@ void freeArgsBarr(struct byteArray *args){
 	freeBarr(args);
 }
 
+struct consCell{
+	void *head;
+	void *tail;
+};
+struct byteArray *simpleCons(void *head, void *tail){
+	struct byteArray *result = allocBarr(sizeof(struct consCell));
+	struct consCell *cell = (struct consCell*)(result->arr);
+	cell->head = head;
+	cell->tail = tail;
+	return result;
+}
 
+void *iota;
 int barrMain(struct byteArray *args){
 	int i, len;
 	struct byteArray* *rbarrs;
 
 	len = args->size / sizeof(struct byteArray*);
 	rbarrs = (struct byteArray**)(args->arr);
+
+	struct byteArray *cell = simpleCons(0, 0);
+	freeBarr(cell);
 
 	for(i = 0; i < len; i++){
 		printBarr(rbarrs[i]);
