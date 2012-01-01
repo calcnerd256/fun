@@ -83,15 +83,17 @@ struct consCell *cdr(char *cell){
 		((struct consCell*)cell)->tail
 	);
 }
-struct byteArray *ptrBarrToConsBarrList(struct byteArray *arr){
-	void* *ptr = (void**)(arr->arr);
-	int len = arr->size / sizeof(void*);
+//pcbl stands for pointer cons barr list: a list made of cons-barrs containing pointers
+struct byteArray *ptrArrToPcbl(int len, void* *xs){
 	struct byteArray *result = 0;
 	while(len)
-		result = simpleCons(ptr[--len], (void*)result); 
+		result = simpleCons(xs[--len], (void*)result); 
 	return result;
 }
-void freePtrConsBarrList(struct byteArray *arr){
+struct byteArray *ptrBarrToPcbl(struct byteArray *arr){
+	return ptrArrToPcbl(arr->size / sizeof(void*), (void**)(arr->arr));
+}
+void freePcbl(struct byteArray *arr){
 	struct byteArray *tail;
 	while(arr){
 		tail = (struct byteArray*)cdr(arr->arr);
@@ -101,14 +103,14 @@ void freePtrConsBarrList(struct byteArray *arr){
 }
 
 void *iota;
-int barrMain(struct byteArray *args, struct byteArray *arfs){
+int barrMain(struct byteArray *args, struct byteArray *arhs){
 	int i, len;
 	struct byteArray* *rbarrs;
 
-	while(arfs){
-		printBarr((struct byteArray*)car(arfs->arr));
-		arfs = (struct byteArray*)cdr(arfs->arr);
-		if(arfs)
+	while(arhs){
+		printBarr((struct byteArray*)car(arhs->arr));
+		arhs = (struct byteArray*)cdr(arhs->arr);
+		if(arhs)
 			printf(" ");
 	}
 	printf("\n");
@@ -129,9 +131,11 @@ int barrMain(struct byteArray *args, struct byteArray *arfs){
 int main(int arfc, char* *arfv){
 	int result;
 	struct byteArray *args = argsToBarr(arfc, arfv);
-	struct byteArray *arfs = ptrBarrToConsBarrList(args);
-	result = barrMain(args, arfs);
-	freePtrConsBarrList(arfs);
+	struct byteArray *arhs = ptrBarrToPcbl(args);
+	struct byteArray *arfs = ptrArrToPcbl(arfc, (void**)arfv);
+	result = barrMain(args, arhs);
+	freePcbl(arhs);
 	freeArgsBarr(args);
+	freePcbl(arfs);
 	return result;
 }
