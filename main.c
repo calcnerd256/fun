@@ -2,7 +2,7 @@
 
 //stdlib.h
 extern void free(void*);
-extern void* malloc(size_t);
+extern void *malloc(size_t);
 
 //string.h
 extern size_t strlen(char*);
@@ -48,7 +48,7 @@ void printBarr(struct byteArray *barr){
 }
 struct byteArray *argsToBarr(int arfc, char* *arfv){
 	int i;
-	struct byteArray** rbarrs;
+	struct byteArray* *rbarrs;
 	struct byteArray *result = allocBarr(arfc * sizeof(struct byteArray*));
 	rbarrs = (struct byteArray**)(result->arr);
 	for(i = 0; i < arfc; i++)
@@ -62,17 +62,21 @@ void freeArgsBarr(struct byteArray *args){
 	freeBarr(args);
 }
 
+
 int barrMain(struct byteArray *args){
 	int i, len;
 	struct byteArray* *rbarrs;
+
 	len = args->size / sizeof(struct byteArray*);
 	rbarrs = (struct byteArray**)(args->arr);
+
 	for(i = 0; i < len; i++){
 		printBarr(rbarrs[i]);
 		if(i+1 < len)
 			printf(" ");
 	}
 	printf("\n");
+
 	return 0;
 }
 
