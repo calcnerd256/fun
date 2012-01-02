@@ -163,25 +163,49 @@ struct byteArray *tcPtr(void *value){
 }
 
 void tcPrintDump(struct byteArray* tc){
-	struct byteArray* stack = 0;
 	struct byteArray* ptr;
+	struct byteArray* stack = 0;
+	if(!tcConsp(tc)){
+		if(tcAtomp(tc))
+			printf("<%p>", tcValue(tc));
+		else
+			printf("<???>");
+		return;
+	}
+	stack = simpleCons(&ptr, stack);// print ")"
 	stack = simpleCons(tc, stack);
+	printf("(");
 	while(stack){
+		//pop tc
 		tc = bcar(stack);
 		ptr = bcdr(stack);
 		freeBarr(stack);
 		stack = ptr;
+
 		if((void*)&ptr == tc)
 			printf(")");
 		else if((void*)&stack == tc)
 			printf(" . ");
+		else if((void*)&tc == tc)
+			printf(" ");
 		else{
 			if(tcConsp(tc)){
-				printf("(");
-				stack = simpleCons(&ptr, stack);// print ")"
-				stack = simpleCons(tcCdr(tc), stack);
-				stack = simpleCons(&stack, stack);// print " "
-				stack = simpleCons(tcCar(tc), stack);
+				//print cdr later
+				if(tcValue(tcCdr(tc))){
+					stack = simpleCons(tcCdr(tc), stack);
+					if(tcAtomp(tcCdr(tc)))
+						stack = simpleCons(&stack, stack);// print " . " later
+					else
+						stack = simpleCons(&tc, stack);// print " " later
+				}
+				//print car later
+				if(tcConsp(tcCar(tc))){
+					stack = simpleCons(&ptr, stack);// print ")" later
+					stack = simpleCons(tcCar(tc), stack);
+					printf("(");
+				}
+				else
+					stack = simpleCons(tcCar(tc), stack);
 			}
 			else{
 				if(tcAtomp(tc))
@@ -231,6 +255,7 @@ int barrMain(struct byteArray *arfs){
 	test = pcblToTc(arfs);
 	tcPrintDump(test);
 	tcFreeTree(test);
+	printf("\n");
 
 	while(arfs){
 		printf("%s", (char*)car(arfs->arr));
