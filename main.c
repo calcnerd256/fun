@@ -176,7 +176,7 @@ void tcPrintDump(struct byteArray* tc){
 			if(!tcValue(tc))
 				printf("nil");
 			else
-			printf("<%p>", tcValue(tc));
+				printf("<%p>", tcValue(tc));
 		}
 		else
 			printf("<??\?>");
@@ -221,7 +221,7 @@ void tcPrintDump(struct byteArray* tc){
 			if(cstr == tcType(tc))
 				printf("\"%s\"", (char*)tcValue(tc));
 			else
-			printf("<%p>", tcValue(tc));
+				printf("<%p>", tcValue(tc));
 		}
 		else
 			printf("<??\?>");
