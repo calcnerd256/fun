@@ -155,17 +155,30 @@ void tcFreeTree(struct byteArray *tc){
 		freeBarr(tc);
 	}
 }
+struct byteArray *tcCons(void *head, void *tail){
+	return simpleCons(pair, simpleCons(head, tail));
+}
+struct byteArray *tcPtr(void *value){
+	return simpleCons(leaf, value);
+}
 
 void *iota;
 int barrMain(struct byteArray *arfs){
 
-	struct byteArray *test = simpleCons(pair, simpleCons(simpleCons(pair, simpleCons(simpleCons(leaf, leaf), simpleCons(leaf, leaf))), simpleCons(leaf, (void*)0)));
+	struct byteArray *test = tcCons(
+		tcCons(
+			tcPtr(leaf),
+			tcPtr(leaf)
+		),
+		tcPtr((void*)0)
+	);
 	if(tcAtomp(tcCdr(test)))
 		if(0 == (void*)tcValue(tcCdr(test)))
 			printf("tc cdr is leaf null\n");
-	if(tcAtomp(tcCar(test)))
-		if(leaf == (void*)tcValue(tcCar(test)))
-			printf("tc car is leaf leaf\n");
+	if(tcConsp(tcCar(test)))
+		if(leaf == (void*)tcValue(tcCar(tcCar(test))))
+			if(leaf == (void*)tcValue(tcCdr(tcCar(test))))
+				printf("tc car is (cons leaf leaf)\n");
 	if(tcConsp(test));
 		printf("tc type is pair\n");
 	tcFreeTree(test);
