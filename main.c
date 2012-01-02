@@ -169,7 +169,7 @@ void tcPrintDump(struct byteArray* tc){
 		if(tcAtomp(tc))
 			printf("<%p>", tcValue(tc));
 		else
-			printf("<???>");
+			printf("<??\?>");
 		return;
 	}
 	stack = simpleCons(&ptr, stack);// print ")"
@@ -210,7 +210,7 @@ void tcPrintDump(struct byteArray* tc){
 		else if(tcAtomp(tc))
 			printf("<%p>", tcValue(tc));
 		else
-			printf(" ??? ");
+			printf("<??\?>");
 	}
 }
 struct byteArray *reversePcbl(struct byteArray *ps){
