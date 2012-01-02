@@ -164,6 +164,25 @@ struct byteArray *tcPtr(void *value){
 	return simpleCons(leaf, value);
 }
 
+void tcPrintAtom(struct byteArray* tc){
+	if(!tc || !tcValue(tc)){
+		printf("nil");
+		return;
+	}
+	if(tcConsp(tc)){
+		printf("somecons");
+		return;
+	}
+	if(!tcAtomp(tc)){
+		printf("<??\?>");
+		return;
+	}
+	if(cstr == tcType(tc)){
+		printf("\"%s\"", (char*)tcValue(tc));
+		return;
+	}
+	printf("<%p>", tcValue(tc));
+}
 void tcPrintDump(struct byteArray* tc){
 	struct byteArray* ptr;
 	struct byteArray* stack = 0;
@@ -172,17 +191,10 @@ void tcPrintDump(struct byteArray* tc){
 		return;
 	}
 	if(!tcConsp(tc)){
-		if(tcAtomp(tc)){
-			if(!tcValue(tc))
-				printf("nil");
-			else
-				printf("<%p>", tcValue(tc));
-		}
-		else
-			printf("<??\?>");
+		tcPrintAtom(tc);
 		return;
 	}
-	stack = simpleCons(&ptr, stack);// print ")"
+	stack = simpleCons(&ptr, stack);// print ")" later
 	stack = simpleCons(tc, stack);
 	printf("(");
 	while(stack){
@@ -217,14 +229,8 @@ void tcPrintDump(struct byteArray* tc){
 			}
 			stack = simpleCons(tcCar(tc), stack);
 		}
-		else if(tcAtomp(tc)){
-			if(cstr == tcType(tc))
-				printf("\"%s\"", (char*)tcValue(tc));
-			else
-				printf("<%p>", tcValue(tc));
-		}
 		else
-			printf("<??\?>");
+			tcPrintAtom(tc);
 	}
 }
 struct byteArray *reversePcbl(struct byteArray *ps){
@@ -258,21 +264,16 @@ struct byteArray *argsToTc(int arfc, char* *arfv){
 void *iota;
 int barrMain(struct byteArray *arfs){
 
-	struct byteArray *test = tcCons(
-		tcCons(
-			tcPtr(leaf),
-			tcPtr(leaf)
-		),
-		tcPtr((void*)0)
-	);
-	tcPrintDump(test);
-	tcFreeTree(test);
+	tcPrintDump(arfs);
 	printf("\n");
 
-	test = arfs;
-	tcPrintDump(test);
+	while(tcConsp(arfs)){
+		tcPrintDump(tcCar(arfs));
+		arfs = tcCdr(arfs);
+		if(tcValue(arfs))
+			printf(" ");
+	}
 	printf("\n");
-
 
 	return 0;
 }
