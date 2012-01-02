@@ -189,29 +189,29 @@ void tcPrintDump(struct byteArray* tc){
 		else if((void*)&tc == tc)
 			printf(" ");
 		else if(tcConsp(tc)){
-				//print cdr later
-				if(tcValue(tcCdr(tc))){
-					stack = simpleCons(tcCdr(tc), stack);
-					stack = simpleCons(
-						tcAtomp(tcCdr(tc)) ?
-							&stack : // " . "
-							&tc, // " "
-						stack
-					);
-				}
-
-				//print car later
-				if(tcConsp(tcCar(tc))){
-					stack = simpleCons(&ptr, stack);// print ")" later
-					printf("(");
-				}
-					stack = simpleCons(tcCar(tc), stack);
+			//print cdr later
+			if(tcValue(tcCdr(tc))){
+				stack = simpleCons(tcCdr(tc), stack);
+				stack = simpleCons(
+					tcAtomp(tcCdr(tc)) ?
+						&stack : // " . "
+						&tc, // " "
+					stack
+				);
 			}
-			else if(tcAtomp(tc))
-					printf("<%p>", tcValue(tc));
-				else
-					printf(" ??? ");
+
+			//print car later
+			if(tcConsp(tcCar(tc))){
+				stack = simpleCons(&ptr, stack);// print ")" later
+				printf("(");
+			}
+			stack = simpleCons(tcCar(tc), stack);
 		}
+		else if(tcAtomp(tc))
+			printf("<%p>", tcValue(tc));
+		else
+			printf(" ??? ");
+	}
 }
 struct byteArray *reversePcbl(struct byteArray *ps){
 	struct byteArray *result = 0;
