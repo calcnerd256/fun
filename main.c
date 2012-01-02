@@ -165,6 +165,7 @@ struct byteArray *tcPtr(void *value){
 }
 
 void tcPrintAtom(struct byteArray* tc){
+	char* ptr;
 	if(!tc || !tcValue(tc)){
 		printf("nil");
 		return;
@@ -178,7 +179,14 @@ void tcPrintAtom(struct byteArray* tc){
 		return;
 	}
 	if(cstr == tcType(tc)){
-		printf("\"%s\"", (char*)tcValue(tc));
+		printf("\"");
+		ptr = (char*)tcValue(tc);
+		while(*ptr){
+			if('\\' == *ptr || '\"' == *ptr)
+				printf("\\");
+			printf("%c", *ptr++);
+		}
+		printf("\"");
 		return;
 	}
 	printf("<%p>", tcValue(tc));
@@ -268,7 +276,7 @@ int barrMain(struct byteArray *arfs){
 	printf("\n");
 
 	while(tcConsp(arfs)){
-		tcPrintDump(tcCar(arfs));
+		printf("%s", (char*)tcValue(tcCar(arfs)));
 		arfs = tcCdr(arfs);
 		if(tcValue(arfs))
 			printf(" ");
