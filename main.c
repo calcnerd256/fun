@@ -111,6 +111,7 @@ struct byteArray* bcdr(struct byteArray *cell){
 void *leaf;
 void *pair;
 void *error;
+void *cstr;//null-terminated string buffer
 void* tcType(struct byteArray *tc){
 	return (void*)bcar(tc);
 }
@@ -118,6 +119,7 @@ int tcConsp(struct byteArray *tc){
 	return pair == tcType(tc);
 }
 int tcAtomp(struct byteArray *tc){
+	if(cstr == tcType(tc)) return 1;
 	return leaf == tcType(tc);
 }
 void* tcValue(struct byteArray *tc){
@@ -165,9 +167,17 @@ struct byteArray *tcPtr(void *value){
 void tcPrintDump(struct byteArray* tc){
 	struct byteArray* ptr;
 	struct byteArray* stack = 0;
+	if(!tc){
+		printf("nil");
+		return;
+	}
 	if(!tcConsp(tc)){
-		if(tcAtomp(tc))
+		if(tcAtomp(tc)){
+			if(!tcValue(tc))
+				printf("nil");
+			else
 			printf("<%p>", tcValue(tc));
+		}
 		else
 			printf("<??\?>");
 		return;
@@ -207,8 +217,12 @@ void tcPrintDump(struct byteArray* tc){
 			}
 			stack = simpleCons(tcCar(tc), stack);
 		}
-		else if(tcAtomp(tc))
+		else if(tcAtomp(tc)){
+			if(cstr == tcType(tc))
+				printf("\"%s\"", (char*)tcValue(tc));
+			else
 			printf("<%p>", tcValue(tc));
+		}
 		else
 			printf("<??\?>");
 	}
@@ -234,6 +248,12 @@ struct byteArray *pcblToTc(struct byteArray *pcbl){
 	freePcbl(backwards);
 	return result;
 }
+struct byteArray *argsToTc(int arfc, char* *arfv){
+	struct byteArray *result = tcPtr(0);
+	while(arfc)
+		result = tcCons(simpleCons(cstr, arfv[--arfc]), result);
+	return result;
+}
 
 void *iota;
 int barrMain(struct byteArray *arfs){
@@ -249,17 +269,8 @@ int barrMain(struct byteArray *arfs){
 	tcFreeTree(test);
 	printf("\n");
 
-	test = pcblToTc(arfs);
+	test = arfs;
 	tcPrintDump(test);
-	tcFreeTree(test);
-	printf("\n");
-
-	while(arfs){
-		printf("%s", (char*)car(arfs->arr));
-		arfs = (struct byteArray*)cdr(arfs->arr);
-		if(arfs)
-			printf(" ");
-	}
 	printf("\n");
 
 
@@ -275,8 +286,10 @@ int main(int arfc, char* *arfv){
 	pointAtSelf(&pair);
 	pointAtSelf(&error);
 	pointAtSelf(&iota);
-	struct byteArray *arfs = ptrArrToPcbl(arfc, (void**)arfv);
+	pointAtSelf(&cstr);
+
+	struct byteArray *arfs = argsToTc(arfc, arfv);
 	result = barrMain(arfs);
-	freePcbl(arfs);
+	tcFreeTree(arfs);
 	return result;
 }
