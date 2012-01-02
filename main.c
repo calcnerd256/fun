@@ -149,8 +149,8 @@ void tcFreeTree(struct byteArray *tc){
 		freeBarr(stack);
 		stack = ptr;
 		if(tcConsp(tc)){
-			stack = simpleCons(tcCar(tc), stack);
 			stack = simpleCons(tcCdr(tc), stack);
+			stack = simpleCons(tcCar(tc), stack);
 		}
 		freeBarr(tc);
 	}
@@ -160,6 +160,58 @@ struct byteArray *tcCons(void *head, void *tail){
 }
 struct byteArray *tcPtr(void *value){
 	return simpleCons(leaf, value);
+}
+
+void tcPrintDump(struct byteArray* tc){
+	struct byteArray* stack = 0;
+	struct byteArray* ptr;
+	stack = simpleCons(tc, stack);
+	while(stack){
+		tc = bcar(stack);
+		ptr = bcdr(stack);
+		freeBarr(stack);
+		stack = ptr;
+		if((void*)&ptr == tc)
+			printf(")");
+		else if((void*)&stack == tc)
+			printf(" . ");
+		else{
+			if(tcConsp(tc)){
+				printf("(");
+				stack = simpleCons(&ptr, stack);// print ")"
+				stack = simpleCons(tcCdr(tc), stack);
+				stack = simpleCons(&stack, stack);// print " "
+				stack = simpleCons(tcCar(tc), stack);
+			}
+			else{
+				if(tcAtomp(tc))
+					printf("<%p>", tcValue(tc));
+				else
+					printf(" ??? ");
+			}
+		}
+	}
+}
+struct byteArray *reversePcbl(struct byteArray *ps){
+	struct byteArray *result = 0;
+	while(ps){
+		result = simpleCons(bcar(ps), result);
+		ps = bcdr(ps);
+	}
+	return result;
+}
+struct byteArray *pcblToTc(struct byteArray *pcbl){
+	struct byteArray *result;
+	struct byteArray *ptr;
+	struct byteArray *backwards = reversePcbl(pcbl);
+	ptr = backwards;
+	result = tcPtr(0);
+	while(ptr){
+		result = tcCons(tcPtr(bcar(ptr)), result);
+		ptr = bcdr(ptr);
+	}
+	freePcbl(backwards);
+	return result;
 }
 
 void *iota;
@@ -172,15 +224,12 @@ int barrMain(struct byteArray *arfs){
 		),
 		tcPtr((void*)0)
 	);
-	if(tcAtomp(tcCdr(test)))
-		if(0 == (void*)tcValue(tcCdr(test)))
-			printf("tc cdr is leaf null\n");
-	if(tcConsp(tcCar(test)))
-		if(leaf == (void*)tcValue(tcCar(tcCar(test))))
-			if(leaf == (void*)tcValue(tcCdr(tcCar(test))))
-				printf("tc car is (cons leaf leaf)\n");
-	if(tcConsp(test));
-		printf("tc type is pair\n");
+	tcPrintDump(test);
+	tcFreeTree(test);
+	printf("\n");
+
+	test = pcblToTc(arfs);
+	tcPrintDump(test);
 	tcFreeTree(test);
 
 	while(arfs){
