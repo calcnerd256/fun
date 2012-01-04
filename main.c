@@ -1,5 +1,8 @@
+//stddef.h
+typedef long unsigned int size_t;
+
+
 //stdio.h
-#include <stddef.h>
 extern int printf(char*, ...);
 
 //stdlib.h
