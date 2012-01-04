@@ -1,4 +1,6 @@
-#include <stdio.h>
+//stdio.h
+#include <stddef.h>
+extern int printf(char*, ...);
 
 //stdlib.h
 extern void free(void*);
