@@ -169,6 +169,7 @@ struct byteArray *tcPtr(void *value){
 	return simpleCons(leaf, value);
 }
 
+void *iota;
 void tcPrintAtom(struct byteArray* tc){
 	char* ptr;
 	if(!tc || !tcValue(tc)){
@@ -192,6 +193,10 @@ void tcPrintAtom(struct byteArray* tc){
 			printf("%c", *ptr++);
 		}
 		printf("\"");
+		return;
+	}
+	if(iota == tcValue(tc)){
+		printf("iota");
 		return;
 	}
 	printf("<%p>", tcValue(tc));
@@ -274,7 +279,62 @@ struct byteArray *argsToTc(int arfc, char* *arfv){
 	return result;
 }
 
-void *iota;
+struct byteArray *iotaGen(struct byteArray *operand){
+	//(iota operand) = (operand S K)
+	return tcCons(tcPtr(iota), operand);
+}
+struct byteArray *I(){
+	//i i x = i S K x
+	// = S S K K x
+	// = S K (K K) x
+	// = K x (K K x = K)
+	// = x
+	//i i x = x
+	// && I x = x
+	// => i i = I
+	return iotaGen(tcPtr(iota));
+}
+struct byteArray *ChurchZero(){
+	//i I x y = I S K x y
+	// = S K x y
+	// = K y (x y)
+	// = y
+	//0 x y = y
+	//i I = 0
+	//K I x y = I y = y
+	return iotaGen(I());
+}
+struct byteArray *K(){
+	//i 0 = 0 S K
+	// = K I S K
+	// = I K
+	// = K
+	return iotaGen(ChurchZero());
+}
+struct byteArray *S(){
+	//i K = K S K
+	// = S
+	return iotaGen(K());
+}
+int iotaTest(struct byteArray *arfs){
+	//I really should be doing refcounting first...
+	struct byteArray *expr = tcCons(
+		tcCons(
+			tcCons(S(), I()),
+			I()
+		),
+		tcCons(
+			tcCons(S(), I()),
+			I()
+		)
+	);
+	printf("%p\n", expr);
+	tcPrintDump(expr);
+	printf("\n");
+        tcFreeTree(expr);
+	return 0;
+}
+
 int barrMain(struct byteArray *arfs){
 
 	tcPrintDump(arfs);
@@ -288,7 +348,7 @@ int barrMain(struct byteArray *arfs){
 	}
 	printf("\n");
 
-	return 0;
+	return iotaTest(arfs);
 }
 
 void pointAtSelf(void* *ptr){
