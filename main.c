@@ -201,35 +201,33 @@ void tcPrintAtom(struct byteArray* tc){
 	}
 	printf("<%p>", tcValue(tc));
 }
+int tcRightHeavyIotaTreep(struct byteArray* tc){// no cycle detection!
+	while(tc){
+		if(iota == tcValue(tc))
+			return 1;
+		if(!tcConsp(tc))
+			return 0;
+		if(iota != tcValue(tcCar(tc)))
+			return 0;
+		tc = tcCdr(tc);
+	}
+	return 0;
+}
 int tcIotaSpecialp(struct byteArray* tc){
-	if(iota == tcValue(tc))
-		return 1;
+	//only covers i, I, 0, K, and S
+	if(!tcRightHeavyIotaTreep(tc)) return 0;
 	if(!tcConsp(tc))
-		return 0;
-	if(iota != tcValue(tcCar(tc)))
-		return 0;
+		return 1;//iota
 	tc = tcCdr(tc);
-	if(iota == tcValue(tc))
-		return 1;
 	if(!tcConsp(tc))
-		return 0;
-	if(iota != tcValue(tcCar(tc)))
-		return 0;
+		return 1;//I
 	tc = tcCdr(tc);
-	if(iota == tcValue(tc))
-		return 1;
 	if(!tcConsp(tc))
-		return 0;
-	if(iota != tcValue(tcCar(tc)))
-		return 0;
+		return 1;//0
 	tc = tcCdr(tc);
-	if(iota == tcValue(tc))
-		return 1;
 	if(!tcConsp(tc))
-		return 0;
-	if(iota != tcValue(tcCar(tc)))
-		return 0;
-	return iota == tcValue(tcCdr(tc));
+		return 1;//K
+	return iota == tcValue(tcCdr(tc));//S
 }
 int tcPrintIotaSpecial(struct byteArray* tc){
 	//assume tcIotaSpecialp
@@ -428,11 +426,11 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 			freeTcCons(ptr);
 			return result;
 		}
-		//ptr = tcCdr(expr)
-		//else i (i x)
+		//i (i x)
 		//i (i x) = i x S K
 		// = x S K S K
-		//if x is then i, I, 0, K, S, or (i S), then we have a special form
+		//if x is then i, I, 0, K, then we have a special form that's already been taken care of
+		//if x is equivalent to one of those or to S or (i S), then we would like to simplify it
 	}
 	//check I is car
 	//if I is car, return cdr
