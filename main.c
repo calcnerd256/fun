@@ -98,19 +98,19 @@ struct byteArray *ptrArrToPcbl(int len, void* *xs){
 struct byteArray *ptrBarrToPcbl(struct byteArray *arr){
 	return ptrArrToPcbl(arr->size / sizeof(void*), (void**)(arr->arr));
 }
-void freePcbl(struct byteArray *arr){
-	struct byteArray *tail;
-	while(arr){
-		tail = (struct byteArray*)cdr(arr->arr);
-		freeBarr(arr);
-		arr = tail;
-	}
-}
 struct byteArray* bcar(struct byteArray *cell){
 	return (struct byteArray*)car(cell->arr);
 }
 struct byteArray* bcdr(struct byteArray *cell){
 	return (struct byteArray*)cdr(cell->arr);
+}
+void freePcbl(struct byteArray *arr){
+	struct byteArray *tail;
+	while(arr){
+		tail = bcdr(arr);
+		freeBarr(arr);
+		arr = tail;
+	}
 }
 
 void *leaf;
@@ -370,9 +370,41 @@ struct byteArray *S(){
 	return iotaGen(K());
 }
 
+void tcStackPush(struct byteArray* *stack, void *val){
+	*stack = tcCons(val, *stack);
+}
+struct byteArray *tcEvalIotaDefinitionStepLeak(struct byteArray *expr){
+	struct byteArray *leakStack = tcPtr(0);
+	//assume all checking has been done
+	expr = tcCons(tcCons(tcCdr(expr), S()), K());
+	tcStackPush(&leakStack, tcPtr(expr));// (x . S) . K
+	tcStackPush(&leakStack, tcCdr(expr));// K
+	tcStackPush(&leakStack, tcPtr(tcCar(expr)));// x . S
+	tcStackPush(&leakStack, tcCdr(tcCar(expr)));// S
+	return tcCons(expr, leakStack);
+}
+void freeTcCons(struct byteArray* tc){
+	//only frees the cons cell, not its contents
+	//a tcCons is a simple cons whose car is not to be freed and whose cdr is a simple cons
+	freeBarr(bcdr(tc));
+	freeBarr(tc);
+}
+struct byteArray *tcStackSlinky(struct byteArray *src, struct byteArray *dest){
+	struct byteArray *ptr = src;
+	while(src && tcConsp(src)){
+		ptr = src;
+		tcStackPush(&dest, tcCar(src));
+		src = tcCdr(src);
+		freeTcCons(ptr);
+	}
+	if(src)
+		freeBarr(src);
+	return dest;
+}
 struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 	struct byteArray *leakStack = tcPtr(0);
 	struct byteArray *result = 0;
+	struct byteArray *ptr = 0;
 	if(!expr) return tcCons(expr, leakStack);
 	if(iota == tcValue(expr)) return tcCons(expr, leakStack);
 	if(!tcConsp(expr)) return tcCons(expr, leakStack);
@@ -381,23 +413,38 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 		if(iota == tcValue(tcCdr(expr)))
 			//it's I
 			return tcCons(expr, leakStack);
-		if(!tcConsp(tcCdr(expr))){
-			//i x = x S K
-			result = tcCons(tcCons(tcCdr(expr), S()), K());
-			leakStack = tcCons(tcPtr(result), leakStack);//(x . S) . K
-			leakStack = tcCons(tcCdr(result), leakStack);// K
-			leakStack = tcCons(tcPtr(tcCar(result)), leakStack);// x . S
-			leakStack = tcCons(tcCdr(tcCar(result)), leakStack);// S
+		if(!tcConsp(tcCdr(expr)))
+			return tcEvalIotaDefinitionStepLeak(expr);
+		if(tcIotaSpecialp(expr))
 			return tcCons(result, leakStack);
+		//i (x y)
+		if(iota != tcValue(tcCar(tcCdr(expr)))){
+			//i (x y) = x y S K as above
+			result = tcEvalIotaDefinitionStepLeak(expr);
+			ptr = tcIotaEvalStepLeak(tcCar(result));
+			leakStack = tcStackSlinky(tcCdr(result), tcCdr(ptr));//frees tcCdr(result)
+			freeTcCons(result);
+			result = tcCons(tcCar(ptr), leakStack);
+			freeTcCons(ptr);
+			return result;
 		}
+		//ptr = tcCdr(expr)
+		//else i (i x)
+		//i (i x) = i x S K
+		// = x S K S K
+		//if x is then i, I, 0, K, S, or (i S), then we have a special form
 	}
 	//check I is car
+	//if I is car, return cdr
 	//check 0 is car
+	//if 0 is car, return I
 	//check K is car
 	//check K is caar
+	//if K is caar, return cdar
 	//check S is car
 	//check S is caar
 	//check S is caaar
+	//if S is caaar, return cdaar cdr (cdar cdr)
 	//recurse carwise
 	//recurse cdrwise?
 	return tcCons(expr, leakStack);
@@ -410,8 +457,7 @@ void freeLeakStack(struct byteArray *stack){
 	while(stack && tcConsp(stack)){
 		if(tcAtomp(tcCar(stack))){
 			ptr = tcValue(tcCar(stack));
-			freeBarr((struct byteArray*)cdr(ptr->arr));
-			freeBarr(ptr);
+			freeTcCons(ptr);
 		}
 		stack = tcCdr(stack);
 	}
@@ -419,7 +465,7 @@ void freeLeakStack(struct byteArray *stack){
 
 int iotaTest(struct byteArray *arfs){
 	//I really should be doing refcounting first...
-	struct byteArray *expr = iotaGen(tcPtr(0));/*tcCons(
+	struct byteArray *expr = iotaGen(tcCons(tcPtr((void*)1), tcPtr((void*)2)));/*tcCons(
 		tcCons(
 			tcCons(S(), I()),
 			I()
@@ -438,9 +484,7 @@ int iotaTest(struct byteArray *arfs){
 	printf("\n");
 	freeLeakStack(tcCdr(stepMem));
 	tcFreeTree(tcCdr(stepMem));
-	//freeCons(stepMem);
-	freeBarr((struct byteArray*)cdr(stepMem->arr));
-	freeBarr(stepMem);
+	freeTcCons(stepMem);
         tcFreeTree(expr);
 	return 0;
 }
