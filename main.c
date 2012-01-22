@@ -427,16 +427,15 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 	if(!tcConsp(expr)) return nopLeak(expr);
 	expar = tcCar(expr);
 	expdr = tcCdr(expr);
-	leakStack = tcPtr(0);
 	if(iota == tcValue(expar)){
 		//check it's not deeper than iS (which becomes S S K = \ x y . S S K x = \ x y . S x (K x) y = \ x y . x y x)
 		if(iota == tcValue(expdr))
 			//it's I
-			return tcCons(expr, leakStack);
+			return nopLeak(expr);
 		if(!tcConsp(expdr))
 			return tcEvalIotaDefinitionStepLeak(expr);
 		if(tcIotaSpecialp(expr))
-			return tcCons(result, leakStack);
+			return nopLeak(result);
 		//i (x y)
 		if(tcCdrHeavyIotaTreep(expr)){
 			//now, which one is it?
@@ -450,7 +449,7 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 			//that is, take the (n-2)&(~3)th cdr
 			n = (n-2)&~3;
 			while(n--) expr = tcCdr(expr);
-			return tcCons(expr, leakStack);
+			return nopLeak(expr);
 		}
 		if(iota != tcValue(tcCar(expdr))){
 			//i (x y) = x y S K as above
@@ -467,12 +466,15 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 		// = x S K S K
 		//if x is then i, I, 0, K, then we have a special form that's already been taken care of
 		//if x is equivalent to one of those or to S or (i S), then we would like to simplify it
-	return tcCons(expr, leakStack);
+
+		//TODO: recurse appropriately
+		return nopLeak(expr);
 	}
 	if(!tcConsp(expar)){
 		//TODO: recurse cdrwise
-	return tcCons(expr, leakStack);
+		return nopLeak(expr);
 	}
+	if(!leakStack) leakStack = tcPtr(0);
 	expaar = tcCar(expar);
 	expdar = tcCdr(expar);
 	//check I is car
@@ -495,12 +497,15 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 			//well, both of those cases act the same, so...
 			//TODO: recurse cdrwise, delay execution of incomplete higher-order functions K and S
 		}
+	if(!leakStack) leakStack = tcPtr(0);
 	if(!tcConsp(expaar)){
 		//TODO: recurse appropriately
 	return tcCons(expr, leakStack);
 	}
+	if(!leakStack) leakStack = tcPtr(0);
 	expaaar = tcCar(expaar);
 	expdaar = tcCar(expaar);
+	if(!leakStack) leakStack = tcPtr(0);
 	if(tcIotaSpecialp(expaar))
 		//check K is caar
 		//iota is caaar
@@ -528,6 +533,7 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 										//TODO: recurse cdrwise and recurse upon cdar
 									}
 						}
+	if(!leakStack) leakStack = tcPtr(0);
 	//check S is caaar
 	//iota is caaaar
 	//K is cdaaar
@@ -551,6 +557,7 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 									}
 	//recurse carwise
 	//recurse cdrwise?
+	if(!leakStack) leakStack = tcPtr(0);
 	return tcCons(expr, leakStack);
 }
 
