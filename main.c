@@ -415,6 +415,7 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 	struct byteArray *expar = 0;
 	struct byteArray *expdr = 0;
 	struct byteArray *expaar = 0;
+	struct byteArray *expdar = 0;
 	int n = 0;
 	if(!expr) return tcCons(expr, leakStack);
 	if(iota == tcValue(expr)) return tcCons(expr, leakStack);
@@ -465,21 +466,22 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 		//TODO: recurse cdrwise
 	}
 	expaar = tcCar(expar);
+	expdar = tcCdr(expar);
 	//check I is car
 	//if I is car, return cdr
 	//caar is iota
 	//cdar is iota
 	if(tcIotaSpecialp(expar))
 		if(iota == tcValue(expaar)){
-			if(iota == tcValue(tcCdr(expar)))
+			if(iota == tcValue(expdar))
 				return tcCons(expdr, leakStack);
 			//check 0 is car
 			//if 0 is car, return I
 			//then cdar should be I
-			if(tcConsp(tcCdr(expar)))
-				if(iota == tcValue(tcCar(tcCdr(expar))))
-					if(iota == tcValue(tcCdr(tcCdr(expar))))
-						return tcCons(tcCdr(expar), leakStack);//reuse the I in the 0
+			if(tcConsp(expdar))
+				if(iota == tcValue(tcCar(expdar)))
+					if(iota == tcValue(tcCdr(expdar)))
+						return tcCons(expdar, leakStack);//reuse the I in the 0
 			//check K is car
 			//check S is car
 			//well, both of those cases act the same, so...
@@ -502,7 +504,7 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 							if(iota == tcValue(tcCar(tcCdr(tcCdr(expaar))))){
 								if(iota == tcValue(tcCdr(tcCdr(tcCdr(expaar)))))
 									//if K is caar, return cdar
-									return tcCons(tcCdr(expar), leakStack);
+									return tcCons(expdar, leakStack);
 								//check S is caar
 								//I is cdddaar
 								//iota is cadddaar
