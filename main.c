@@ -414,6 +414,7 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 	struct byteArray *ptr = 0;
 	struct byteArray *expar = 0;
 	struct byteArray *expdr = 0;
+	struct byteArray *expaar = 0;
 	int n = 0;
 	if(!expr) return tcCons(expr, leakStack);
 	if(iota == tcValue(expr)) return tcCons(expr, leakStack);
@@ -463,12 +464,13 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 	if(!tcConsp(expar)){
 		//TODO: recurse cdrwise
 	}
+	expaar = tcCar(expar);
 	//check I is car
 	//if I is car, return cdr
 	//caar is iota
 	//cdar is iota
 	if(tcIotaSpecialp(expar))
-		if(iota == tcValue(tcCar(expar))){
+		if(iota == tcValue(expaar)){
 			if(iota == tcValue(tcCdr(expar)))
 				return tcCons(expdr, leakStack);
 			//check 0 is car
@@ -483,53 +485,53 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 			//well, both of those cases act the same, so...
 			//TODO: recurse cdrwise, delay execution of incomplete higher-order functions K and S
 		}
-	if(tcIotaSpecialp(tcCar(expar)))
+	if(tcIotaSpecialp(expaar))
 		//check K is caar
 		//iota is caaar
 		//0 is cdaar
 		//iota is cadaar
 		//I is cddaar
-		if(tcConsp(tcCar(expar)))
-			if(iota == tcValue(tcCar(tcCar(expar))))
-				if(tcConsp(tcCdr(tcCar(expar))))
-					if(iota == tcValue(tcCar(tcCdr(tcCar(expar)))))
+		if(tcConsp(expaar))
+			if(iota == tcValue(tcCar(expaar)))
+				if(tcConsp(tcCdr(expaar)))
+					if(iota == tcValue(tcCar(tcCdr(expaar))))
 						//check I is cddaar
 						//iota is caddaar
 						//iota is cdddaar
-						if(tcConsp(tcCdr(tcCdr(tcCar(expar)))))
-							if(iota == tcValue(tcCar(tcCdr(tcCdr(tcCar(expar)))))){
-								if(iota == tcValue(tcCdr(tcCdr(tcCdr(tcCar(expar))))))
+						if(tcConsp(tcCdr(tcCdr(expaar))))
+							if(iota == tcValue(tcCar(tcCdr(tcCdr(expaar))))){
+								if(iota == tcValue(tcCdr(tcCdr(tcCdr(expaar)))))
 									//if K is caar, return cdar
 									return tcCons(tcCdr(expar), leakStack);
 								//check S is caar
 								//I is cdddaar
 								//iota is cadddaar
 								//iota is cddddaar
-								if(tcConsp(tcCdr(tcCdr(tcCdr(tcCar(expar))))))
-									if(iota = tcValue(tcCar(tcCdr(tcCdr(tcCdr(tcCar(expar)))))))
-										if(iota = tcValue(tcCdr(tcCdr(tcCdr(tcCdr(tcCar(expar))))))){
+								if(tcConsp(tcCdr(tcCdr(tcCdr(expaar)))))
+									if(iota = tcValue(tcCar(tcCdr(tcCdr(tcCdr(expaar))))))
+										if(iota = tcValue(tcCdr(tcCdr(tcCdr(tcCdr(expaar)))))){
 											//TODO: recurse cdrwise and recurse upon cdar
 										}
 							}
 	//check S is caaar
-	if(tcConsp(tcCar(expar)))
+	if(tcConsp(expaar))
 		//iota is caaaar
 		//K is cdaaar
-		if(tcConsp(tcCar(tcCar(expar))))
-			if(iota == tcValue(tcCar(tcCar(tcCar(expar)))))
+		if(tcConsp(tcCar(expaar)))
+			if(iota == tcValue(tcCar(tcCar(expaar))))
 				//iota is cadaaar
 				//0 is cddaaar
-				if(tcConsp(tcCdr(tcCar(tcCar(expar)))))
-					if(iota == tcValue(tcCar(tcCdr(tcCar(tcCar(expar))))))
+				if(tcConsp(tcCdr(tcCar(expaar))))
+					if(iota == tcValue(tcCar(tcCdr(tcCar(expaar)))))
 						//iota is caddaaar
 						//I is cdddaaar
-						if(tcConsp(tcCdr(tcCdr(tcCar(tcCar(expar))))))
-							if(iota == tcValue(tcCar(tcCdr(tcCdr(tcCar(tcCar(expar)))))))
-								if(tcConsp(tcCdr(tcCdr(tcCdr(tcCar(tcCar(expar)))))))
+						if(tcConsp(tcCdr(tcCdr(tcCar(expaar)))))
+							if(iota == tcValue(tcCar(tcCdr(tcCdr(tcCar(expaar))))))
+								if(tcConsp(tcCdr(tcCdr(tcCdr(tcCar(expaar))))))
 									//iota is cadddaaar
 									//iota is cddddaaar
-									if(iota == tcValue(tcCar(tcCdr(tcCdr(tcCdr(tcCar(tcCar(expar))))))))
-										if(iota == tcValue(tcCdr(tcCdr(tcCdr(tcCdr(tcCar(tcCar(expar)))))))){
+									if(iota == tcValue(tcCar(tcCdr(tcCdr(tcCdr(tcCar(expaar)))))))
+										if(iota == tcValue(tcCdr(tcCdr(tcCdr(tcCdr(tcCar(expaar))))))){
 											//if S is caaar, return cdaar cdr (cdar cdr)
 											//TODO
 										}
