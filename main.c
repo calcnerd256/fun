@@ -456,28 +456,48 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 		//if x is then i, I, 0, K, then we have a special form that's already been taken care of
 		//if x is equivalent to one of those or to S or (i S), then we would like to simplify it
 	}
+	if(!tcConsp(tcCar(expr))){
+		//TODO: recurse cdrwise
+	}
 	//check I is car
 	//if I is car, return cdr
+	//caar is iota
+	//cdar is iota
 	if(tcIotaSpecialp(tcCar(expr)))
-		//caar is iota
-		//cdar is iota
-		if(tcConsp(tcCar(expr)))
-			if(iota == tcValue(tcCar(tcCar(expr)))){
-				if(iota == tcValue(tcCdr(tcCar(expr))))
-					return tcCons(tcCdr(expr), leakStack);
-				//check 0 is car
-				//if 0 is car, return I
-				//then cdar should be I
-				if(tcConsp(tcCdr(tcCar(expr))))
-					if(iota == tcValue(tcCar(tcCdr(tcCar(expr)))))
-						if(iota == tcValue(tcCdr(tcCdr(tcCar(expr)))))
-							return tcCons(tcCdr(tcCar(expr)), leakStack);//reuse the I in the 0
-				//check K is car
-			}
-	//check K is caar
-	//if K is caar, return cdar
-	//check S is car
+		if(iota == tcValue(tcCar(tcCar(expr)))){
+			if(iota == tcValue(tcCdr(tcCar(expr))))
+				return tcCons(tcCdr(expr), leakStack);
+			//check 0 is car
+			//if 0 is car, return I
+			//then cdar should be I
+			if(tcConsp(tcCdr(tcCar(expr))))
+				if(iota == tcValue(tcCar(tcCdr(tcCar(expr)))))
+					if(iota == tcValue(tcCdr(tcCdr(tcCar(expr)))))
+						return tcCons(tcCdr(tcCar(expr)), leakStack);//reuse the I in the 0
+			//check K is car
+			//check S is car
+			//well, both of those cases act the same, so...
+			//TODO: recurse cdrwise, delay execution of incomplete higher-order functions K and S
+		}
+	if(tcIotaSpecialp(tcCar(tcCar(expr))))
+		//check K is caar
+		//iota is caaar
+		//0 is cdaar
+		//iota is cadaar
+		//I is cddaar
+		if(iota == tcValue(tcCar(tcCar(tcCar(expr)))))
+			if(tcConsp(tcCdr(tcCar(tcCar(expr)))))
+				if(iota == tcValue(tcCar(tcCdr(tcCar(tcCar(expr))))))
+					//check I is cddaar
+					//iota is caddaar
+					//iota is cdddaar
+					if(tcConsp(tcCdr(tcCdr(tcCar(tcCar(expr))))))
+						if(iota == tcValue(tcCar(tcCdr(tcCdr(tcCar(tcCar(expr)))))))
+							if(iota == tcValue(tcCdr(tcCdr(tcCdr(tcCar(tcCar(expr)))))))
+								//if K is caar, return cdar
+								return tcCons(tcCdr(tcCar(expr)), leakStack);
 	//check S is caar
+
 	//check S is caaar
 	//if S is caaar, return cdaar cdr (cdar cdr)
 	//recurse carwise
@@ -501,7 +521,7 @@ void freeLeakStack(struct byteArray *stack){
 int iotaTest(struct byteArray *arfs){
 	//I really should be doing refcounting first...
 	struct byteArray *expr = //iotaGen(iotaGen(iotaGen(S())));
-		tcCons(ChurchZero(), tcPtr((void*)2));
+		tcCons(tcCons(K(), tcPtr((void*)1)), tcPtr((void*)2));
 		//iotaGen(tcCons(tcPtr((void*)1), tcPtr((void*)2)));
 		/*tcCons(
 		tcCons(
