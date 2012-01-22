@@ -445,10 +445,13 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 			//ah, but I can check its length
 			n = cdrwiseHeight(expr);
 			if(n < 6) return nopLeak(expr);
-			//okay, beyond that, it's 6=2, so it's ((n-2)%6)+2, or n - 4 * (n-2)/4
-			//that is, take the (n-2)&(~3)th cdr
-			n = (n-2)&~3;
-			while(n--) expr = tcCdr(expr);
+			//okay, beyond that, it's 6=1, so it's ((n-1)%6)+1, or n - (6 * (n-1)/6 - 1)
+				//by 6=1, I mean that i (i S) = i (i (i (i (i (i i))))) = i i
+			//that is, take the 6*((n-1)/6) th cdr
+			n = 6*((n-1)/6) - 1;
+			if(n >= 0)
+				while(n--)
+					expr = tcCdr(expr);
 			return nopLeak(expr);
 		}
 		if(iota != tcValue(tcCar(expdr))){
@@ -573,8 +576,8 @@ void freeLeakStack(struct byteArray *stack){
 
 int iotaTest(struct byteArray *arfs){
 	//I really should be doing refcounting first...
-	struct byteArray *expr = //iotaGen(iotaGen(iotaGen(S())));
-		tcCons(tcCons(tcCons(S(), tcPtr((void*)3)), tcPtr((void*)1)), tcPtr((void*)2));
+	struct byteArray *expr = iotaGen(iotaGen(iotaGen(S())));
+		//tcCons(tcCons(tcCons(S(), tcPtr((void*)3)), tcPtr((void*)1)), tcPtr((void*)2));
 		//iotaGen(tcCons(tcPtr((void*)1), tcPtr((void*)2)));
 		/*tcCons(
 		tcCons(
