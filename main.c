@@ -201,7 +201,7 @@ void tcPrintAtom(struct byteArray* tc){
 	}
 	printf("<%p>", tcValue(tc));
 }
-int tcRightHeavyIotaTreep(struct byteArray* tc){// no cycle detection!
+int tcCdrHeavyIotaTreep(struct byteArray* tc){// no cycle detection!
 	while(tc){
 		if(iota == tcValue(tc))
 			return 1;
@@ -215,7 +215,7 @@ int tcRightHeavyIotaTreep(struct byteArray* tc){// no cycle detection!
 }
 int tcIotaSpecialp(struct byteArray* tc){
 	//only covers i, I, 0, K, and S
-	if(!tcRightHeavyIotaTreep(tc)) return 0;
+	if(!tcCdrHeavyIotaTreep(tc)) return 0;
 	if(!tcConsp(tc))
 		return 1;//iota
 	tc = tcCdr(tc);
@@ -399,10 +399,20 @@ struct byteArray *tcStackSlinky(struct byteArray *src, struct byteArray *dest){
 		freeBarr(src);
 	return dest;
 }
+int cdrwiseHeight(struct byteArray *tree){
+	//return number of cdrs from root to cdrmost leaf
+	int result = 0;
+	while(tree && tcConsp(tree)){
+		tree = tcCdr(tree);
+		++result;
+	}
+	return result;
+}
 struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 	struct byteArray *leakStack = tcPtr(0);
 	struct byteArray *result = 0;
 	struct byteArray *ptr = 0;
+	int n = 0;
 	if(!expr) return tcCons(expr, leakStack);
 	if(iota == tcValue(expr)) return tcCons(expr, leakStack);
 	if(!tcConsp(expr)) return tcCons(expr, leakStack);
@@ -416,6 +426,20 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 		if(tcIotaSpecialp(expr))
 			return tcCons(result, leakStack);
 		//i (x y)
+		if(tcCdrHeavyIotaTreep(expr)){
+			//now, which one is it?
+			//it must be too long already
+			//so maybe we can cut to the chase and cut it short?
+			//nope, because i (i S) = I and i i = I but we don't yet detect i S
+			//ah, but I can check its length
+			n = cdrwiseHeight(expr);
+			if(n < 6) return tcCons(expr, leakStack);
+			//okay, beyond that, it's 6=2, so it's ((n-2)%6)+2, or n - 4 * (n-2)/4
+			//that is, take the (n-2)&(~3)th cdr
+			n = (n-2)&~3;
+			while(n--) expr = tcCdr(expr);
+			return tcCons(expr, leakStack);
+		}
 		if(iota != tcValue(tcCar(tcCdr(expr)))){
 			//i (x y) = x y S K as above
 			result = tcEvalIotaDefinitionStepLeak(expr);
@@ -463,7 +487,8 @@ void freeLeakStack(struct byteArray *stack){
 
 int iotaTest(struct byteArray *arfs){
 	//I really should be doing refcounting first...
-	struct byteArray *expr = iotaGen(tcCons(tcPtr((void*)1), tcPtr((void*)2)));/*tcCons(
+	struct byteArray *expr = iotaGen(iotaGen(iotaGen(S())));
+		/*iotaGen(tcCons(tcPtr((void*)1), tcPtr((void*)2)));/ *tcCons(
 		tcCons(
 			tcCons(S(), I()),
 			I()
