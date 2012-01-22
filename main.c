@@ -408,8 +408,11 @@ int cdrwiseHeight(struct byteArray *tree){
 	}
 	return result;
 }
+struct byteArray *nopLeak(struct byteArray *expr){
+	return tcCons(expr, tcPtr((void*)0));
+}
 struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
-	struct byteArray *leakStack = tcPtr(0);
+	struct byteArray *leakStack = 0;
 	struct byteArray *result = 0;
 	struct byteArray *ptr = 0;
 	struct byteArray *expar = 0;
@@ -418,6 +421,7 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 	struct byteArray *expdar = 0;
 	struct byteArray *expaaar = 0;
 	int n = 0;
+	leakStack = tcPtr(0);
 	if(!expr) return tcCons(expr, leakStack);
 	if(iota == tcValue(expr)) return tcCons(expr, leakStack);
 	if(!tcConsp(expr)) return tcCons(expr, leakStack);
@@ -494,13 +498,14 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 		//TODO: recurse appropriately
 	return tcCons(expr, leakStack);
 	}
+	expaaar = tcCar(expaar);
 	if(tcIotaSpecialp(expaar))
 		//check K is caar
 		//iota is caaar
 		//0 is cdaar
 		//iota is cadaar
 		//I is cddaar
-		if(iota == tcValue(tcCar(expaar)))
+		if(iota == tcValue(expaaar))
 			if(tcConsp(tcCdr(expaar)))
 				if(iota == tcValue(tcCar(tcCdr(expaar))))
 					//check I is cddaar
@@ -524,21 +529,21 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 	//check S is caaar
 	//iota is caaaar
 	//K is cdaaar
-	if(tcConsp(tcCar(expaar)))
-		if(iota == tcValue(tcCar(tcCar(expaar))))
+	if(tcConsp(expaaar))
+		if(iota == tcValue(tcCar(expaaar)))
 			//iota is cadaaar
 			//0 is cddaaar
-			if(tcConsp(tcCdr(tcCar(expaar))))
-				if(iota == tcValue(tcCar(tcCdr(tcCar(expaar)))))
+			if(tcConsp(tcCdr(expaaar)))
+				if(iota == tcValue(tcCar(tcCdr(expaaar))))
 					//iota is caddaaar
 					//I is cdddaaar
-					if(tcConsp(tcCdr(tcCdr(tcCar(expaar)))))
-						if(iota == tcValue(tcCar(tcCdr(tcCdr(tcCar(expaar))))))
-							if(tcConsp(tcCdr(tcCdr(tcCdr(tcCar(expaar))))))
+					if(tcConsp(tcCdr(tcCdr(expaaar))))
+						if(iota == tcValue(tcCar(tcCdr(tcCdr(expaaar)))))
+							if(tcConsp(tcCdr(tcCdr(tcCdr(expaaar)))))
 								//iota is cadddaaar
 								//iota is cddddaaar
-								if(iota == tcValue(tcCar(tcCdr(tcCdr(tcCdr(tcCar(expaar)))))))
-									if(iota == tcValue(tcCdr(tcCdr(tcCdr(tcCdr(tcCar(expaar))))))){
+								if(iota == tcValue(tcCar(tcCdr(tcCdr(tcCdr(expaaar))))))
+									if(iota == tcValue(tcCdr(tcCdr(tcCdr(tcCdr(expaaar)))))){
 										//if S is caaar, return cdaar cdr (cdar cdr)
 										//TODO
 									}
