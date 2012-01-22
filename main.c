@@ -421,12 +421,12 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 	struct byteArray *expdar = 0;
 	struct byteArray *expaaar = 0;
 	int n = 0;
-	leakStack = tcPtr(0);
-	if(!expr) return tcCons(expr, leakStack);
-	if(iota == tcValue(expr)) return tcCons(expr, leakStack);
-	if(!tcConsp(expr)) return tcCons(expr, leakStack);
+	if(!expr) return nopLeak(expr);
+	if(iota == tcValue(expr)) return nopLeak(expr);
+	if(!tcConsp(expr)) return nopLeak(expr);
 	expar = tcCar(expr);
 	expdr = tcCdr(expr);
+	leakStack = tcPtr(0);
 	if(iota == tcValue(expar)){
 		//check it's not deeper than iS (which becomes S S K = \ x y . S S K x = \ x y . S x (K x) y = \ x y . x y x)
 		if(iota == tcValue(expdr))
