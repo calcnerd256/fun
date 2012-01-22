@@ -510,8 +510,8 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 								//iota is cadddaar
 								//iota is cddddaar
 								if(tcConsp(tcCdr(tcCdr(tcCdr(expaar)))))
-									if(iota = tcValue(tcCar(tcCdr(tcCdr(tcCdr(expaar))))))
-										if(iota = tcValue(tcCdr(tcCdr(tcCdr(tcCdr(expaar)))))){
+									if(iota == tcValue(tcCar(tcCdr(tcCdr(tcCdr(expaar))))))
+										if(iota == tcValue(tcCdr(tcCdr(tcCdr(tcCdr(expaar)))))){
 											//TODO: recurse cdrwise and recurse upon cdar
 										}
 							}
