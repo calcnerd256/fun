@@ -444,7 +444,7 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 			//nope, because i (i S) = I and i i = I but we don't yet detect i S
 			//ah, but I can check its length
 			n = cdrwiseHeight(expr);
-			if(n < 6) return tcCons(expr, leakStack);
+			if(n < 6) return nopLeak(expr);
 			//okay, beyond that, it's 6=2, so it's ((n-2)%6)+2, or n - 4 * (n-2)/4
 			//that is, take the (n-2)&(~3)th cdr
 			n = (n-2)&~3;
@@ -474,7 +474,6 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 		//TODO: recurse cdrwise
 		return nopLeak(expr);
 	}
-	if(!leakStack) leakStack = tcPtr(0);
 	expaar = tcCar(expar);
 	expdar = tcCdr(expar);
 	//check I is car
@@ -484,28 +483,26 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 	if(tcIotaSpecialp(expar))
 		if(iota == tcValue(expaar)){
 			if(iota == tcValue(expdar))
-				return tcCons(expdr, leakStack);
+				return nopLeak(expdr);
 			//check 0 is car
 			//if 0 is car, return I
 			//then cdar should be I
 			if(tcConsp(expdar))
 				if(iota == tcValue(tcCar(expdar)))
 					if(iota == tcValue(tcCdr(expdar)))
-						return tcCons(expdar, leakStack);//reuse the I in the 0
+						return nopLeak(expdar);//reuse the I in the 0
 			//check K is car
 			//check S is car
 			//well, both of those cases act the same, so...
 			//TODO: recurse cdrwise, delay execution of incomplete higher-order functions K and S
+			return nopLeak(expr);
 		}
-	if(!leakStack) leakStack = tcPtr(0);
 	if(!tcConsp(expaar)){
 		//TODO: recurse appropriately
-	return tcCons(expr, leakStack);
+		return nopLeak(expr);
 	}
-	if(!leakStack) leakStack = tcPtr(0);
 	expaaar = tcCar(expaar);
 	expdaar = tcCar(expaar);
-	if(!leakStack) leakStack = tcPtr(0);
 	if(tcIotaSpecialp(expaar))
 		//check K is caar
 		//iota is caaar
@@ -522,7 +519,7 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 						if(iota == tcValue(tcCar(tcCdr(expdaar)))){
 							if(iota == tcValue(tcCdr(tcCdr(expdaar))))
 								//if K is caar, return cdar
-								return tcCons(expdar, leakStack);
+								return nopLeak(expdar);
 							//check S is caar
 							//I is cdddaar
 							//iota is cadddaar
@@ -531,9 +528,9 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 								if(iota == tcValue(tcCar(tcCdr(tcCdr(expdaar)))))
 									if(iota == tcValue(tcCdr(tcCdr(tcCdr(expdaar))))){
 										//TODO: recurse cdrwise and recurse upon cdar
+										return nopLeak(expr);
 									}
 						}
-	if(!leakStack) leakStack = tcPtr(0);
 	//check S is caaar
 	//iota is caaaar
 	//K is cdaaar
@@ -554,11 +551,11 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 									if(iota == tcValue(tcCdr(tcCdr(tcCdr(tcCdr(expaaar)))))){
 										//if S is caaar, return cdaar cdr (cdar cdr)
 										//TODO
+										return nopLeak(expr);
 									}
 	//recurse carwise
 	//recurse cdrwise?
-	if(!leakStack) leakStack = tcPtr(0);
-	return tcCons(expr, leakStack);
+	return nopLeak(expr);
 }
 
 //a leak stack is a true-list whose conses are tcCons
