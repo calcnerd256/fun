@@ -420,6 +420,7 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 	struct byteArray *expaar = 0;
 	struct byteArray *expdar = 0;
 	struct byteArray *expaaar = 0;
+	struct byteArray *expdaar = 0;
 	int n = 0;
 	if(!expr) return nopLeak(expr);
 	if(iota == tcValue(expr)) return nopLeak(expr);
@@ -499,6 +500,7 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 	return tcCons(expr, leakStack);
 	}
 	expaaar = tcCar(expaar);
+	expdaar = tcCar(expaar);
 	if(tcIotaSpecialp(expaar))
 		//check K is caar
 		//iota is caaar
@@ -507,22 +509,22 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 		//I is cddaar
 		if(iota == tcValue(expaaar))
 			if(tcConsp(tcCdr(expaar)))
-				if(iota == tcValue(tcCar(tcCdr(expaar))))
+				if(iota == tcValue(tcCar(expdaar)))
 					//check I is cddaar
 					//iota is caddaar
 					//iota is cdddaar
-					if(tcConsp(tcCdr(tcCdr(expaar))))
-						if(iota == tcValue(tcCar(tcCdr(tcCdr(expaar))))){
-							if(iota == tcValue(tcCdr(tcCdr(tcCdr(expaar)))))
+					if(tcConsp(tcCdr(expdaar)))
+						if(iota == tcValue(tcCar(tcCdr(expdaar)))){
+							if(iota == tcValue(tcCdr(tcCdr(expdaar))))
 								//if K is caar, return cdar
 								return tcCons(expdar, leakStack);
 							//check S is caar
 							//I is cdddaar
 							//iota is cadddaar
 							//iota is cddddaar
-							if(tcConsp(tcCdr(tcCdr(tcCdr(expaar)))))
-								if(iota == tcValue(tcCar(tcCdr(tcCdr(tcCdr(expaar))))))
-									if(iota == tcValue(tcCdr(tcCdr(tcCdr(tcCdr(expaar)))))){
+							if(tcConsp(tcCdr(tcCdr(expdaar))))
+								if(iota == tcValue(tcCar(tcCdr(tcCdr(expdaar)))))
+									if(iota == tcValue(tcCdr(tcCdr(tcCdr(expdaar))))){
 										//TODO: recurse cdrwise and recurse upon cdar
 									}
 						}
