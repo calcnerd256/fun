@@ -458,6 +458,13 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 	}
 	//check I is car
 	//if I is car, return cdr
+	if(tcIotaSpecialp(tcCar(expr)))
+		//caar is iota
+		//cdar is iota
+		if(tcConsp(tcCar(expr)))
+			if(iota == tcValue(tcCar(tcCar(expr))))
+				if(iota == tcValue(tcCdr(tcCar(expr))))
+					return tcCons(tcCdr(expr), leakStack);
 	//check 0 is car
 	//if 0 is car, return I
 	//check K is car
@@ -487,8 +494,10 @@ void freeLeakStack(struct byteArray *stack){
 
 int iotaTest(struct byteArray *arfs){
 	//I really should be doing refcounting first...
-	struct byteArray *expr = iotaGen(iotaGen(iotaGen(S())));
-		/*iotaGen(tcCons(tcPtr((void*)1), tcPtr((void*)2)));/ *tcCons(
+	struct byteArray *expr = //iotaGen(iotaGen(iotaGen(S())));
+		tcCons(I(), tcPtr((void*)2));
+		//iotaGen(tcCons(tcPtr((void*)1), tcPtr((void*)2)));
+		/*tcCons(
 		tcCons(
 			tcCons(S(), I()),
 			I()
