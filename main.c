@@ -485,21 +485,50 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 		//0 is cdaar
 		//iota is cadaar
 		//I is cddaar
-		if(iota == tcValue(tcCar(tcCar(tcCar(expr)))))
-			if(tcConsp(tcCdr(tcCar(tcCar(expr)))))
-				if(iota == tcValue(tcCar(tcCdr(tcCar(tcCar(expr))))))
-					//check I is cddaar
-					//iota is caddaar
-					//iota is cdddaar
-					if(tcConsp(tcCdr(tcCdr(tcCar(tcCar(expr))))))
-						if(iota == tcValue(tcCar(tcCdr(tcCdr(tcCar(tcCar(expr)))))))
-							if(iota == tcValue(tcCdr(tcCdr(tcCdr(tcCar(tcCar(expr)))))))
-								//if K is caar, return cdar
-								return tcCons(tcCdr(tcCar(expr)), leakStack);
-	//check S is caar
-
+		if(tcConsp(tcCar(tcCar(expr))))
+			if(iota == tcValue(tcCar(tcCar(tcCar(expr)))))
+				if(tcConsp(tcCdr(tcCar(tcCar(expr)))))
+					if(iota == tcValue(tcCar(tcCdr(tcCar(tcCar(expr))))))
+						//check I is cddaar
+						//iota is caddaar
+						//iota is cdddaar
+						if(tcConsp(tcCdr(tcCdr(tcCar(tcCar(expr))))))
+							if(iota == tcValue(tcCar(tcCdr(tcCdr(tcCar(tcCar(expr))))))){
+								if(iota == tcValue(tcCdr(tcCdr(tcCdr(tcCar(tcCar(expr)))))))
+									//if K is caar, return cdar
+									return tcCons(tcCdr(tcCar(expr)), leakStack);
+								//check S is caar
+								//I is cdddaar
+								//iota is cadddaar
+								//iota is cddddaar
+								if(tcConsp(tcCdr(tcCdr(tcCdr(tcCar(tcCar(expr)))))))
+									if(iota = tcValue(tcCar(tcCdr(tcCdr(tcCdr(tcCar(tcCar(expr))))))))
+										if(iota = tcValue(tcCdr(tcCdr(tcCdr(tcCdr(tcCar(tcCar(expr)))))))){
+											//TODO: recurse cdrwise and recurse upon cdar
+										}
+							}
 	//check S is caaar
-	//if S is caaar, return cdaar cdr (cdar cdr)
+	if(tcConsp(tcCar(tcCar(expr))))
+		//iota is caaaar
+		//K is cdaaar
+		if(tcConsp(tcCar(tcCar(tcCar(expr)))))
+			if(iota == tcValue(tcCar(tcCar(tcCar(tcCar(expr))))))
+				//iota is cadaaar
+				//0 is cddaaar
+				if(tcConsp(tcCdr(tcCar(tcCar(tcCar(expr))))))
+					if(iota == tcValue(tcCar(tcCdr(tcCar(tcCar(tcCar(expr)))))))
+						//iota is caddaaar
+						//I is cdddaaar
+						if(tcConsp(tcCdr(tcCdr(tcCar(tcCar(tcCar(expr)))))))
+							if(iota == tcValue(tcCar(tcCdr(tcCdr(tcCar(tcCar(tcCar(expr))))))))
+								if(tcConsp(tcCdr(tcCdr(tcCdr(tcCar(tcCar(tcCar(expr))))))))
+									//iota is cadddaaar
+									//iota is cddddaaar
+									if(iota == tcValue(tcCar(tcCdr(tcCdr(tcCdr(tcCar(tcCar(tcCar(expr)))))))))
+										if(iota == tcValue(tcCdr(tcCdr(tcCdr(tcCdr(tcCar(tcCar(tcCar(expr))))))))){
+											//if S is caaar, return cdaar cdr (cdar cdr)
+											//TODO
+										}
 	//recurse carwise
 	//recurse cdrwise?
 	return tcCons(expr, leakStack);
@@ -521,7 +550,7 @@ void freeLeakStack(struct byteArray *stack){
 int iotaTest(struct byteArray *arfs){
 	//I really should be doing refcounting first...
 	struct byteArray *expr = //iotaGen(iotaGen(iotaGen(S())));
-		tcCons(tcCons(K(), tcPtr((void*)1)), tcPtr((void*)2));
+		tcCons(tcCons(tcCons(S(), tcPtr((void*)3)), tcPtr((void*)1)), tcPtr((void*)2));
 		//iotaGen(tcCons(tcPtr((void*)1), tcPtr((void*)2)));
 		/*tcCons(
 		tcCons(
