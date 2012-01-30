@@ -414,7 +414,6 @@ struct byteArray *nopLeak(struct byteArray *expr){
 struct byteArray *tcIotaSimplifyDeepSpecial(struct byteArray *expr){
 	if(!expr) return nopLeak(expr);
 	if(!tcConsp(expr)) return nopLeak(expr);
-	//assume tcCdrHeavyIotaTreep(expr)
 	if(!tcCdrHeavyIotaTreep(expr)) return nopLeak(expr);
 	//now, which one is it?
 	//it must be too long already
@@ -482,6 +481,9 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 		//if x is equivalent to one of those or to S or (i S), then we would like to simplify it
 
 		//TODO: recurse appropriately
+		//TODO: get and eval x=cddr expr
+		//TODO: collect S, K, S, K, x S, x S K, x S K S K
+		//TODO: can I use tcEvalIotaDefinitionStepLeak twice?
 		return nopLeak(expr);
 	}
 	if(!tcConsp(expar)){
