@@ -412,10 +412,10 @@ struct byteArray *nopLeak(struct byteArray *expr){
 	return tcCons(expr, tcPtr((void*)0));
 }
 struct byteArray *tcIotaSimplifyDeepSpecial(struct byteArray *expr){
-	//assume expr
-	//assume tcConsp(expr)
-	//assume iota == tcValue(tcCar(expr))
-	//assume tcCdrHeavieIotaTreep(expr)
+	if(!expr) return nopLeak(expr);
+	if(!tcConsp(expr)) return nopLeak(expr);
+	//assume tcCdrHeavyIotaTreep(expr)
+	if(!tcCdrHeavyIotaTreep(expr)) return nopLeak(expr);
 	//now, which one is it?
 	//it must be too long already
 	//so maybe we can cut to the chase and cut it short?
