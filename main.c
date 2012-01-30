@@ -411,6 +411,27 @@ int cdrwiseHeight(struct byteArray *tree){
 struct byteArray *nopLeak(struct byteArray *expr){
 	return tcCons(expr, tcPtr((void*)0));
 }
+struct byteArray *tcIotaSimplifyDeepSpecial(struct byteArray *expr){
+	//assume expr
+	//assume tcConsp(expr)
+	//assume iota == tcValue(tcCar(expr))
+	//assume tcCdrHeavieIotaTreep(expr)
+	//now, which one is it?
+	//it must be too long already
+	//so maybe we can cut to the chase and cut it short?
+	//nope, because i (i S) = I and i i = I but we don't yet detect i S
+	//ah, but I can check its length
+	//okay, beyond that, it's 6=1, so it's ((n-1)%6)+1, or n - (6 * (n-1)/6 - 1)
+		//by 6=1, I mean that i (i S) = i (i (i (i (i (i i))))) = i i
+	//that is, take the 6*((n-1)/6) th cdr	int n = cdrwiseHeight(expr);
+	int n = cdrwiseHeight(expr);
+	if(n < 6) return nopLeak(expr);
+	n = 6 * ((n - 1) / 6) - 1;
+	if(n >= 0)
+		while(n--)
+			expr = tcCdr(expr);
+	return nopLeak(expr);
+}
 struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 	struct byteArray *leakStack = 0;
 	struct byteArray *result = 0;
@@ -421,7 +442,6 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 	struct byteArray *expdar = 0;
 	struct byteArray *expaaar = 0;
 	struct byteArray *expdaar = 0;
-	int n = 0;
 	if(!expr) return nopLeak(expr);
 	if(iota == tcValue(expr)) return nopLeak(expr);
 	if(!tcConsp(expr)) return nopLeak(expr);
@@ -437,23 +457,8 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 		if(tcIotaSpecialp(expr))
 			return nopLeak(result);
 		//i (x y)
-		if(tcCdrHeavyIotaTreep(expr)){
-			//now, which one is it?
-			//it must be too long already
-			//so maybe we can cut to the chase and cut it short?
-			//nope, because i (i S) = I and i i = I but we don't yet detect i S
-			//ah, but I can check its length
-			n = cdrwiseHeight(expr);
-			if(n < 6) return nopLeak(expr);
-			//okay, beyond that, it's 6=1, so it's ((n-1)%6)+1, or n - (6 * (n-1)/6 - 1)
-				//by 6=1, I mean that i (i S) = i (i (i (i (i (i i))))) = i i
-			//that is, take the 6*((n-1)/6) th cdr
-			n = 6*((n-1)/6) - 1;
-			if(n >= 0)
-				while(n--)
-					expr = tcCdr(expr);
-			return nopLeak(expr);
-		}
+		if(tcCdrHeavyIotaTreep(expr))
+			return tcIotaSimplifyDeepSpecial(expr);
 		if(iota != tcValue(tcCar(expdr))){
 			//i (x y) = x y S K as above
 			result = tcEvalIotaDefinitionStepLeak(expr);
