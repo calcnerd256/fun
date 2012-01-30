@@ -432,6 +432,14 @@ struct byteArray *tcIotaSimplifyDeepSpecial(struct byteArray *expr){
 			expr = tcCdr(expr);
 	return nopLeak(expr);
 }
+struct byteArray *tcEvalStepCombineLeaks(struct byteArray *result, struct byteArray *temp){
+	//temp starts out with the answer, and result ends up with it
+	struct byteArray *leakStack = tcStackSlinky(tcCdr(result), tcCdr(temp));
+	freeTcCons(result);
+	result = tcCons(tcCar(temp), leakStack);
+	freeTcCons(temp);
+	return result;
+}
 struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 	struct byteArray *leakStack = 0;
 	struct byteArray *result = 0;
@@ -462,12 +470,10 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 		if(iota != tcValue(tcCar(expdr))){
 			//i (x y) = x y S K as above
 			result = tcEvalIotaDefinitionStepLeak(expr);
-			ptr = tcIotaEvalStepLeak(tcCar(result));
-			leakStack = tcStackSlinky(tcCdr(result), tcCdr(ptr));//frees tcCdr(result)
-			freeTcCons(result);
-			result = tcCons(tcCar(ptr), leakStack);
-			freeTcCons(ptr);
-			return result;
+			return tcEvalStepCombineLeaks(
+				result,
+				tcIotaEvalStepLeak(tcCar(result))
+			);
 		}
 		//i (i x)
 		//i (i x) = i x S K
