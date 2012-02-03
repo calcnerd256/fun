@@ -440,9 +440,8 @@ struct byteArray *tcEvalStepCombineLeaks(struct byteArray *result, struct byteAr
 	return result;
 }
 struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
-	struct byteArray *leakStack = 0;
+	//struct byteArray *leakStack = 0;
 	struct byteArray *result = 0;
-	struct byteArray *ptr = 0;
 	struct byteArray *expar = 0;
 	struct byteArray *expdr = 0;
 	struct byteArray *expaar = 0;
