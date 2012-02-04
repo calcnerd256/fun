@@ -1,6 +1,4 @@
-//stddef.h
-typedef long unsigned int size_t;
-
+#include "barr.h"
 
 //stdio.h
 extern int printf(char*, ...);
@@ -9,13 +7,9 @@ extern int printf(char*, ...);
 extern void free(void*);
 extern void *malloc(size_t);
 
+
 //string.h
 extern size_t strlen(char*);
-
-struct byteArray{
-	size_t size;
-	char* arr;
-};
 
 void poolFree(void *ptr){
 	free(ptr);
