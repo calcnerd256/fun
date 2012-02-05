@@ -30,8 +30,6 @@ void freeArgsBarr(struct byteArray *args){
 	freeBarr(args);
 }
 
-
-
 //pcbl stands for pointer cons barr list: a list made of cons-barrs containing pointers
 struct byteArray *ptrArrToPcbl(int len, void* *xs){
 	struct byteArray *result = 0;
@@ -51,18 +49,14 @@ void freePcbl(struct byteArray *arr){
 	}
 }
 
-void *error;
+
 void *cstr;//null-terminated string buffer
 
 int tcAtomp(struct byteArray *tc){
 	if(cstr == tcType(tc)) return 1;
 	return leaf == tcType(tc);
 }
-void* tcValue(struct byteArray *tc){
-	if(!tc) return 0;
-	if(error == tc) return error;
-	return bcdr(tc);
-}
+
 struct byteArray* tcCar(struct byteArray *tc){
 	struct byteArray* tcVal = (struct byteArray*)tcValue(tc);
 	if(!tcVal) return 0;
