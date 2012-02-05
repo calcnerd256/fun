@@ -39,16 +39,7 @@ struct byteArray *simpleCons(void *head, void *tail){
 	cell->tail = tail;
 	return result;
 }
-struct consCell *car(char *cell){
-	return (struct consCell*)(
-		((struct consCell*)cell)->head
-	);
-}
-struct consCell *cdr(char *cell){
-	return (struct consCell*)(
-		((struct consCell*)cell)->tail
-	);
-}
+
 //pcbl stands for pointer cons barr list: a list made of cons-barrs containing pointers
 struct byteArray *ptrArrToPcbl(int len, void* *xs){
 	struct byteArray *result = 0;
