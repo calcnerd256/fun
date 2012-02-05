@@ -1,2 +1,4 @@
 * TODO Write a README
 ** TODO Learn [[http://orgmode.org][org-mode]]
+*** TODO Learn how github uses org-mode
+That link above should point to http://orgmode.org, but github points it to orgmode.html
