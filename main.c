@@ -1,4 +1,4 @@
-#include "tc.h"
+#include "iota.tc.h"
 
 //stdio.h
 extern int printf(char*, ...);
@@ -48,8 +48,6 @@ void freePcbl(struct byteArray *arr){
 		arr = tail;
 	}
 }
-
-#include "iota.tc.h"
 
 void tcPrintAtom(struct byteArray* tc){
 	char* ptr;
