@@ -3,23 +3,8 @@
 //stdio.h
 extern int printf(char*, ...);
 
-//stdlib.h
-extern void free(void*);
-
 //string.h
 extern size_t strlen(char*);
-
-void poolFree(void *ptr){
-	free(ptr);
-}
-
-void freeRbarr(struct byteArray *arr){
-	poolFree(arr);
-}
-void freeBarr(struct byteArray *arr){
-	poolFree(arr->arr);//TODO: check error value
-	freeRbarr(arr);
-}
 
 struct byteArray *strToRbarr(char *str){
 	return referenceBarr(strlen(str), str);

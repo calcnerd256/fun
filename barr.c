@@ -2,6 +2,7 @@
 
 //from stdlib.h
 extern void *malloc(size_t);
+extern void free(void*);
 
 void *poolAlloc(size_t size){
 	//TODO: use a pool of previously-allocated chunks
@@ -19,4 +20,17 @@ struct byteArray *referenceBarr(size_t size, void* ptr){
 
 struct byteArray *allocBarr(size_t size){
 	return referenceBarr(size, poolAlloc(size));
+}
+
+
+void poolFree(void *ptr){
+	free(ptr);
+}
+
+void freeRbarr(struct byteArray *arr){
+	poolFree(arr);
+}
+void freeBarr(struct byteArray *arr){
+	poolFree(arr->arr);//TODO: check error value
+	freeRbarr(arr);
 }
