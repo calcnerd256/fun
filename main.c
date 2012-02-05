@@ -104,12 +104,6 @@ void tcFreeTree(struct byteArray *tc){
 		freeBarr(tc);
 	}
 }
-struct byteArray *tcCons(void *head, void *tail){
-	return simpleCons(pair, simpleCons(head, tail));
-}
-struct byteArray *tcPtr(void *value){
-	return simpleCons(leaf, value);
-}
 
 void *iota;
 void tcPrintAtom(struct byteArray* tc){
