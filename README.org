@@ -1,2 +1,2 @@
 * TODO Write a README
-** TODO Learn org-mode
+** TODO Learn [[http://orgmode.org][org-mode]]
