@@ -1,3 +1,4 @@
+#include "types.h"
 #include "barr.h"
 
 //from stdlib.h

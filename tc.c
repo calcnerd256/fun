@@ -1,3 +1,4 @@
+#include "types.h"
 #include "tc.h"
 
 struct byteArray *simpleCons(void *head, void *tail){

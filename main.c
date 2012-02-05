@@ -1,10 +1,7 @@
+#include "types.h"
+#include "tc.h"
 #include "iota.tc.h"
-
-//stdio.h
-extern int printf(char*, ...);
-
-//string.h
-extern size_t strlen(char*);
+#include "io.h"
 
 struct byteArray *strToRbarr(char *str){
 	return referenceBarr(strlen(str), str);

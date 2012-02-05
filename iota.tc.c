@@ -1,3 +1,5 @@
+#include "types.h"
+#include "tc.h"
 #include "iota.tc.h"
 
 int tcCdrHeavyIotaTreep(struct byteArray* tc){// no cycle detection!
