@@ -57,7 +57,6 @@ int tcAtomp(struct byteArray *tc){
 	return leaf == tcType(tc);
 }
 
-
 void tcFreeTree(struct byteArray *tc){
 	struct byteArray* stack = 0;
 	struct byteArray* ptr;
@@ -540,14 +539,18 @@ int barrMain(struct byteArray *arfs){
 void pointAtSelf(void* *ptr){
 	*ptr = ptr;
 }
-int main(int arfc, char* *arfv){
-	int result;
+int init(){
 	pointAtSelf(&leaf);
 	pointAtSelf(&pair);
 	pointAtSelf(&error);
 	pointAtSelf(&iota);
 	pointAtSelf(&cstr);
-
+	return 0;
+}
+int main(int arfc, char* *arfv){
+	int result;
+	result = init();
+	if(result) return result;
 	struct byteArray *arfs = argsToTc(arfc, arfv);
 	result = barrMain(arfs);
 	tcFreeTree(arfs);
