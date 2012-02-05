@@ -8,3 +8,4 @@ struct byteArray *bcdr(struct byteArray*);
 struct byteArray *ptrArrToPcbl(int, void**);
 struct byteArray *ptrBarrToPcbl(struct byteArray*);
 void freePcbl(struct byteArray*);
+struct byteArray* reversePcbl(struct byteArray*);

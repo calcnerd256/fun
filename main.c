@@ -107,14 +107,7 @@ void tcPrintDump(struct byteArray* tc){
 			tcPrintAtom(tc);
 	}
 }
-struct byteArray *reversePcbl(struct byteArray *ps){
-	struct byteArray *result = 0;
-	while(ps){
-		result = simpleCons(bcar(ps), result);
-		ps = bcdr(ps);
-	}
-	return result;
-}
+
 struct byteArray *pcblToTc(struct byteArray *pcbl){
 	struct byteArray *result;
 	struct byteArray *ptr;

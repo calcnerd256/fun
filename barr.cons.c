@@ -33,3 +33,12 @@ void freePcbl(struct byteArray *arr){
 		arr = tail;
 	}
 }
+
+struct byteArray *reversePcbl(struct byteArray *ps){
+	struct byteArray *result = 0;
+	while(ps){
+		result = simpleCons(bcar(ps), result);
+		ps = bcdr(ps);
+	}
+	return result;
+}
