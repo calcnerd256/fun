@@ -7,6 +7,12 @@ struct byteArray *simpleCons(void *head, void *tail){
 	cell->tail = tail;
 	return result;
 }
+struct byteArray* bcar(struct byteArray *cell){
+	return (struct byteArray*)car(cell->arr);
+}
+struct byteArray* bcdr(struct byteArray *cell){
+	return (struct byteArray*)cdr(cell->arr);
+}
 
 
 struct byteArray *tcCons(void *head, void *tail){

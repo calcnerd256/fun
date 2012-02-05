@@ -42,12 +42,6 @@ struct byteArray *ptrArrToPcbl(int len, void* *xs){
 struct byteArray *ptrBarrToPcbl(struct byteArray *arr){
 	return ptrArrToPcbl(arr->size / sizeof(void*), (void**)(arr->arr));
 }
-struct byteArray* bcar(struct byteArray *cell){
-	return (struct byteArray*)car(cell->arr);
-}
-struct byteArray* bcdr(struct byteArray *cell){
-	return (struct byteArray*)cdr(cell->arr);
-}
 void freePcbl(struct byteArray *arr){
 	struct byteArray *tail;
 	while(arr){
