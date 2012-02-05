@@ -132,3 +132,10 @@ void tcPrintDump(struct byteArray* tc){
 			tcPrintAtom(tc);
 	}
 }
+
+struct byteArray *argsToTc(int arfc, char* *arfv){
+	struct byteArray *result = tcPtr(0);
+	while(arfc)
+		result = tcCons(simpleCons(cstr, arfv[--arfc]), result);
+	return result;
+}

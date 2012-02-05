@@ -13,3 +13,4 @@ void tcPrintAtom(struct byteArray*);
 int tcPrintIotaSpecial(struct byteArray*);
 void tcPrintDump(struct byteArray*);
 
+struct byteArray *argsToTc(int, char**);

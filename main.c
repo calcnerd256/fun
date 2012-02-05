@@ -3,14 +3,6 @@
 #include "iota.tc.h"
 #include "io.h"
 
-
-struct byteArray *argsToTc(int arfc, char* *arfv){
-	struct byteArray *result = tcPtr(0);
-	while(arfc)
-		result = tcCons(simpleCons(cstr, arfv[--arfc]), result);
-	return result;
-}
-
 struct byteArray *tcEvalIotaDefinitionStepLeak(struct byteArray *expr){
 	struct byteArray *leakStack = tcPtr(0);
 	//assume all checking has been done
@@ -23,15 +15,6 @@ struct byteArray *tcEvalIotaDefinitionStepLeak(struct byteArray *expr){
 }
 
 
-int cdrwiseHeight(struct byteArray *tree){
-	//return number of cdrs from root to cdrmost leaf
-	int result = 0;
-	while(tree && tcConsp(tree)){
-		tree = tcCdr(tree);
-		++result;
-	}
-	return result;
-}
 struct byteArray *nopLeak(struct byteArray *expr){
 	return tcCons(expr, tcPtr((void*)0));
 }

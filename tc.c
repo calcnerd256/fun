@@ -93,3 +93,14 @@ struct byteArray *tcStackSlinky(struct byteArray *src, struct byteArray *dest){
 		freeBarr(src);
 	return dest;
 }
+
+
+int cdrwiseHeight(struct byteArray *tree){
+	//return number of cdrs from root to cdrmost leaf
+	int result = 0;
+	while(tree && tcConsp(tree)){
+		tree = tcCdr(tree);
+		++result;
+	}
+	return result;
+}
