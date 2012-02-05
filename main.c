@@ -49,8 +49,8 @@ void freePcbl(struct byteArray *arr){
 	}
 }
 
+#include "iota.tc.h"
 
-void *iota;
 void tcPrintAtom(struct byteArray* tc){
 	char* ptr;
 	if(!tc || !tcValue(tc)){
