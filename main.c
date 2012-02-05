@@ -50,30 +50,6 @@ void freePcbl(struct byteArray *arr){
 }
 
 
-void *cstr;//null-terminated string buffer
-
-int tcAtomp(struct byteArray *tc){
-	if(cstr == tcType(tc)) return 1;
-	return leaf == tcType(tc);
-}
-
-void tcFreeTree(struct byteArray *tc){
-	struct byteArray* stack = 0;
-	struct byteArray* ptr;
-	stack = simpleCons(tc, stack);
-	while(stack){
-		tc = bcar(stack);
-		ptr = bcdr(stack);
-		freeBarr(stack);
-		stack = ptr;
-		if(tcConsp(tc)){
-			stack = simpleCons(tcCdr(tc), stack);
-			stack = simpleCons(tcCar(tc), stack);
-		}
-		freeBarr(tc);
-	}
-}
-
 void *iota;
 void tcPrintAtom(struct byteArray* tc){
 	char* ptr;

@@ -28,6 +28,10 @@ void* tcType(struct byteArray *tc){
 int tcConsp(struct byteArray *tc){
 	return pair == tcType(tc);
 }
+int tcAtomp(struct byteArray *tc){
+	if(cstr == tcType(tc)) return 1;
+	return leaf == tcType(tc);
+}
 
 void* tcValue(struct byteArray *tc){
 	if(!tc) return 0;
@@ -48,4 +52,21 @@ struct byteArray* tcCdr(struct byteArray *tc){
 	if(error == tcVal) return error;
 	if(!tcConsp(tc)) return error;
 	return bcdr(tcVal);
+}
+
+void tcFreeTree(struct byteArray *tc){
+	struct byteArray* stack = 0;
+	struct byteArray* ptr;
+	stack = simpleCons(tc, stack);
+	while(stack){
+		tc = bcar(stack);
+		ptr = bcdr(stack);
+		freeBarr(stack);
+		stack = ptr;
+		if(tcConsp(tc)){
+			stack = simpleCons(tcCdr(tc), stack);
+			stack = simpleCons(tcCar(tc), stack);
+		}
+		freeBarr(tc);
+	}
 }
