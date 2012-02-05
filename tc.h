@@ -10,3 +10,5 @@ struct byteArray *bcdr(struct byteArray*);
 
 struct byteArray *tcCons(void*, void*);
 struct byteArray *tcPtr(void*);
+void* tcType(struct byteArray*);
+int tcConsp(struct byteArray*);

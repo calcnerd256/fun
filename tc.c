@@ -21,3 +21,10 @@ struct byteArray *tcCons(void *head, void *tail){
 struct byteArray *tcPtr(void *value){
 	return simpleCons(leaf, value);
 }
+
+void* tcType(struct byteArray *tc){
+	return (void*)bcar(tc);
+}
+int tcConsp(struct byteArray *tc){
+	return pair == tcType(tc);
+}

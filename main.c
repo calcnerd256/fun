@@ -53,12 +53,7 @@ void freePcbl(struct byteArray *arr){
 
 void *error;
 void *cstr;//null-terminated string buffer
-void* tcType(struct byteArray *tc){
-	return (void*)bcar(tc);
-}
-int tcConsp(struct byteArray *tc){
-	return pair == tcType(tc);
-}
+
 int tcAtomp(struct byteArray *tc){
 	if(cstr == tcType(tc)) return 1;
 	return leaf == tcType(tc);
