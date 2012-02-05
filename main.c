@@ -1,4 +1,4 @@
-#include "barr.h"
+#include "tc.h"
 
 //stdio.h
 extern int printf(char*, ...);
@@ -30,15 +30,7 @@ void freeArgsBarr(struct byteArray *args){
 	freeBarr(args);
 }
 
-#include "cons.h"
 
-struct byteArray *simpleCons(void *head, void *tail){
-	struct byteArray *result = allocBarr(sizeof(struct consCell));
-	struct consCell *cell = (struct consCell*)(result->arr);
-	cell->head = head;
-	cell->tail = tail;
-	return result;
-}
 
 //pcbl stands for pointer cons barr list: a list made of cons-barrs containing pointers
 struct byteArray *ptrArrToPcbl(int len, void* *xs){
@@ -65,8 +57,6 @@ void freePcbl(struct byteArray *arr){
 	}
 }
 
-void *leaf;
-void *pair;
 void *error;
 void *cstr;//null-terminated string buffer
 void* tcType(struct byteArray *tc){
