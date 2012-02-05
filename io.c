@@ -27,3 +27,108 @@ void freeArgsBarr(struct byteArray *args){
 	freeBarr(args);
 }
 
+
+void tcPrintAtom(struct byteArray* tc){
+	char* ptr;
+	if(!tc || !tcValue(tc)){
+		printf("nil");
+		return;
+	}
+	if(tcConsp(tc)){
+		printf("somecons");
+		return;
+	}
+	if(!tcAtomp(tc)){
+		printf("<??\?>");
+		return;
+	}
+	if(cstr == tcType(tc)){
+		printf("\"");
+		ptr = (char*)tcValue(tc);
+		while(*ptr){
+			if('\\' == *ptr || '\"' == *ptr)
+				printf("\\");
+			printf("%c", *ptr++);
+		}
+		printf("\"");
+		return;
+	}
+	if(iota == tcValue(tc)){
+		printf("iota");
+		return;
+	}
+	printf("<%p>", tcValue(tc));
+}
+int tcPrintIotaSpecial(struct byteArray* tc){
+	//assume tcIotaSpecialp
+	if(iota == tcValue(tc))
+		return printf("iota");
+	tc = tcCdr(tc);
+	if(iota == tcValue(tc))
+		return printf("I");
+	tc = tcCdr(tc);
+	if(iota == tcValue(tc))
+		return printf("0");
+	tc = tcCdr(tc);
+	if(iota == tcValue(tc))
+		return printf("K");
+	return printf("S");
+}
+void tcPrintDump(struct byteArray* tc){
+	struct byteArray* ptr;
+	struct byteArray* stack = 0;
+	if(!tc){
+		printf("nil");
+		return;
+	}
+	if(!tcConsp(tc)){
+		tcPrintAtom(tc);
+		return;
+	}
+	stack = simpleCons(&ptr, stack);// print ")" later
+	stack = simpleCons(tc, stack);
+	printf("(");
+	while(stack){
+		//pop tc
+		tc = bcar(stack);
+		ptr = bcdr(stack);
+		freeBarr(stack);
+		stack = ptr;
+
+		if((void*)&ptr == tc)
+			printf(")");
+		else if((void*)&stack == tc)
+			printf(" . ");
+		else if((void*)&tc == tc)
+			printf(" ");
+		else if(tcIotaSpecialp(tc))
+			tcPrintIotaSpecial(tc);
+		else if(tcConsp(tc)){
+			//print cdr later
+			if(tcValue(tcCdr(tc))){
+				stack = simpleCons(tcCdr(tc), stack);
+				stack = simpleCons(
+					tcAtomp(tcCdr(tc)) ?
+						&stack : // " . "
+						tcIotaSpecialp(tcCdr(tc)) ?
+							&stack : // " . "
+							&tc, // " "
+					stack
+				);
+			}
+
+			if(!tcIotaSpecialp(tcCar(tc))){
+				//print car later
+				if(tcConsp(tcCar(tc))){
+					stack = simpleCons(&ptr, stack);// print ")" later
+					printf("(");
+				}
+				stack = simpleCons(tcCar(tc), stack);
+			}
+			else
+				tcPrintIotaSpecial(tcCar(tc));
+		}
+		else
+			tcPrintAtom(tc);
+	}
+}
