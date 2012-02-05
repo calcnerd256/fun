@@ -34,3 +34,18 @@ void* tcValue(struct byteArray *tc){
 	if(error == tc) return error;
 	return bcdr(tc);
 }
+
+struct byteArray* tcCar(struct byteArray *tc){
+	struct byteArray* tcVal = (struct byteArray*)tcValue(tc);
+	if(!tcVal) return 0;
+	if(error == tcVal) return error;
+	if(!tcConsp(tc)) return error;
+	return bcar(tcVal);
+}
+struct byteArray* tcCdr(struct byteArray *tc){
+	struct byteArray* tcVal = (struct byteArray*)tcValue(tc);
+	if(!tcVal) return 0;
+	if(error == tcVal) return error;
+	if(!tcConsp(tc)) return error;
+	return bcdr(tcVal);
+}
