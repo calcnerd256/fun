@@ -1,14 +1,9 @@
-#include "barr.h"
-#include "cons.h"
+#include "barr.cons.h"
 
 void *leaf;
 void *pair;
 void *error;
 void *cstr;//null-terminated string buffer
-
-struct byteArray *simpleCons(void*, void*);
-struct byteArray *bcar(struct byteArray*);
-struct byteArray *bcdr(struct byteArray*);
 
 struct byteArray *tcCons(void*, void*);
 struct byteArray *tcPtr(void*);
