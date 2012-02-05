@@ -30,10 +30,8 @@ void freeArgsBarr(struct byteArray *args){
 	freeBarr(args);
 }
 
-struct consCell{
-	void *head;
-	void *tail;
-};
+#include "cons.h"
+
 struct byteArray *simpleCons(void *head, void *tail){
 	struct byteArray *result = allocBarr(sizeof(struct consCell));
 	struct consCell *cell = (struct consCell*)(result->arr);
