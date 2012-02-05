@@ -4,19 +4,6 @@
 #include "io.h"
 
 
-struct byteArray *pcblToTc(struct byteArray *pcbl){
-	struct byteArray *result;
-	struct byteArray *ptr;
-	struct byteArray *backwards = reversePcbl(pcbl);
-	ptr = backwards;
-	result = tcPtr(0);
-	while(ptr){
-		result = tcCons(tcPtr(bcar(ptr)), result);
-		ptr = bcdr(ptr);
-	}
-	freePcbl(backwards);
-	return result;
-}
 struct byteArray *argsToTc(int arfc, char* *arfv){
 	struct byteArray *result = tcPtr(0);
 	while(arfc)
@@ -24,10 +11,6 @@ struct byteArray *argsToTc(int arfc, char* *arfv){
 	return result;
 }
 
-
-void tcStackPush(struct byteArray* *stack, void *val){
-	*stack = tcCons(val, *stack);
-}
 struct byteArray *tcEvalIotaDefinitionStepLeak(struct byteArray *expr){
 	struct byteArray *leakStack = tcPtr(0);
 	//assume all checking has been done
@@ -38,24 +21,8 @@ struct byteArray *tcEvalIotaDefinitionStepLeak(struct byteArray *expr){
 	tcStackPush(&leakStack, tcCdr(tcCar(expr)));// S
 	return tcCons(expr, leakStack);
 }
-void freeTcCons(struct byteArray* tc){
-	//only frees the cons cell, not its contents
-	//a tcCons is a simple cons whose car is not to be freed and whose cdr is a simple cons
-	freeBarr(bcdr(tc));
-	freeBarr(tc);
-}
-struct byteArray *tcStackSlinky(struct byteArray *src, struct byteArray *dest){
-	struct byteArray *ptr = src;
-	while(src && tcConsp(src)){
-		ptr = src;
-		tcStackPush(&dest, tcCar(src));
-		src = tcCdr(src);
-		freeTcCons(ptr);
-	}
-	if(src)
-		freeBarr(src);
-	return dest;
-}
+
+
 int cdrwiseHeight(struct byteArray *tree){
 	//return number of cdrs from root to cdrmost leaf
 	int result = 0;
