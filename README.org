@@ -2,3 +2,18 @@
 ** TODO Learn [[http://orgmode.org][org-mode]]
 *** TODO Learn how github uses org-mode
 That link above should point to http://orgmode.org, but github points it to orgmode.html
+
+* C OCD fun
+** byte arrays
+Pascal-style strings, consisting of a length and a pointer.
+The not-invented-here of malloc.
+** consCell
+combined with byte arrays (barrs) to make bconses
+bcons a type with a value to make a typed cons (tc) cell
+** iota evaluation
+this will be used to implement some sort of a lisp
+
+* TODO eventually, an interpreter
+** TODO special forms for calls to other libraries
+*** TODO network special forms
+
