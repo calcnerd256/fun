@@ -16,4 +16,5 @@ this will be used to implement some sort of a lisp
 * TODO eventually, an interpreter
 ** TODO special forms for calls to other libraries
 *** TODO network special forms
+so I can program sockets with Lisp forms that manipulate streams
 
