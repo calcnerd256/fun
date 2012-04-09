@@ -20,6 +20,7 @@ void tcFreeTree(struct byteArray*);
 
 struct byteArray *pcblToTc(struct byteArray*);
 void tcStackPush(struct byteArray**, void*);
+void tcPushCar(struct byteArray*, void*);
 struct byteArray *tcStackSlinky(struct byteArray*, struct byteArray*);
 
 int cdrwiseHeight(struct byteArray*);

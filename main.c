@@ -39,10 +39,6 @@ int badIotaEvalStep(struct byteArray* env){
 }
 
 
-void tcPushCar(struct byteArray *xss, void* val){//mutates xss
-	tcSetCar(xss, tcCons(val, tcCar(xss)));
-}
-
 int badIotaTest(struct byteArray *arfs){
 	//int i = 1;
 	struct byteArray *env = 0;

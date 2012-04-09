@@ -95,6 +95,9 @@ struct byteArray *pcblToTc(struct byteArray *pcbl){
 void tcStackPush(struct byteArray* *stack, void *val){
 	*stack = tcCons(val, *stack);
 }
+void tcPushCar(struct byteArray *stacks, void *val){
+	tcSetCar(stacks, tcCons(val, tcCar(stacks)));
+}
 struct byteArray *tcStackSlinky(struct byteArray *src, struct byteArray *dest){
 	struct byteArray *ptr = src;
 	while(src && tcConsp(src)){
