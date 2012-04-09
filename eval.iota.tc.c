@@ -93,6 +93,7 @@ struct byteArray *tcEvalIotaDefLeak(struct byteArray *expr, struct byteArray *ex
 	return nopLeak(expr);
 }
 
+//suddenly, a brilliant or terrible idea: write the evaluation step in a simpler language which itself we evaluate from conses
 
 struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 	//struct byteArray *leakStack = 0;

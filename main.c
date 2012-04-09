@@ -34,6 +34,37 @@ int iotaTest(struct byteArray *arfs){
 	return 0;
 }
 
+int badIotaEvalStep(struct byteArray* env){
+  return 0;
+}
+
+void tcSetCar(struct byteArray *cons, void* newCar){
+	(
+		(struct consCell*)(
+			(
+				(struct byteArray*)(tcValue(cons))
+			)->arr
+		)
+	)->head = newCar;
+}
+
+void tcPushCar(struct byteArray *xss, void* val){//mutates xss
+	tcSetCar(xss, tcCons(val, tcCar(xss)));
+}
+
+int badIotaTest(struct byteArray *arfs){
+	//int i = 1;
+	struct byteArray *env = 0;
+	tcStackPush(&env, iota);
+	tcStackPush(&env, 0);
+	tcPushCar(
+		env,
+		(void*)1
+	);
+	printf(" %d\n", (int)tcCar(tcCar(env)));
+	return 0;
+}
+
 int barrMain(struct byteArray *arfs){
 
 	tcPrintDump(arfs);
@@ -47,7 +78,7 @@ int barrMain(struct byteArray *arfs){
 	}
 	printf("\n");
 
-	return iotaTest(arfs);
+	return badIotaTest(arfs);
 }
 
 void pointAtSelf(void* *ptr){
