@@ -60,6 +60,38 @@ struct byteArray *tcEvalStepCombineLeaks(struct byteArray *result, struct byteAr
 	return result;
 }
 
+struct byteArray *tcEvalIotaDefLeak(struct byteArray *expr, struct byteArray *expdr, struct byteArray *result){
+	//check it's not deeper than iS (which becomes S S K = \ x y . S S K x = \ x y . S x (K x) y = \ x y . x y x)
+       	if(iota == tcValue(expdr))
+		//it's I
+		return nopLeak(expr);
+	if(!tcConsp(expdr))
+		return tcEvalIotaDefinitionStepLeak(expr);
+	if(tcIotaSpecialp(expr))
+		return nopLeak(result);
+	//i (x y)
+	if(tcCdrHeavyIotaTreep(expr))
+		return tcIotaSimplifyDeepSpecial(expr);
+	if(iota != tcValue(tcCar(expdr))){
+		//i (x y) = x y S K as above
+		result = tcEvalIotaDefinitionStepLeak(expr);
+		return tcEvalStepCombineLeaks(
+			result,
+			tcIotaEvalStepLeak(tcCar(result))
+		);
+	}
+	//i (i x)
+	//i (i x) = i x S K
+	// = x S K S K
+	//if x is then i, I, 0, K, then we have a special form that's already been taken care of
+	//if x is equivalent to one of those or to S or (i S), then we would like to simplify it
+
+	//TODO: recurse appropriately
+	//TODO: get and eval x=cddr expr
+	//TODO: collect S, K, S, K, x S, x S K, x S K S K
+	//TODO: can I use tcEvalIotaDefinitionStepLeak twice?
+	return nopLeak(expr);
+}
 
 
 struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
@@ -76,38 +108,9 @@ struct byteArray *tcIotaEvalStepLeak(struct byteArray *expr){
 	if(!tcConsp(expr)) return nopLeak(expr);
 	expar = tcCar(expr);
 	expdr = tcCdr(expr);
-	if(iota == tcValue(expar)){
-		//check it's not deeper than iS (which becomes S S K = \ x y . S S K x = \ x y . S x (K x) y = \ x y . x y x)
-		if(iota == tcValue(expdr))
-			//it's I
-			return nopLeak(expr);
-		if(!tcConsp(expdr))
-			return tcEvalIotaDefinitionStepLeak(expr);
-		if(tcIotaSpecialp(expr))
-			return nopLeak(result);
-		//i (x y)
-		if(tcCdrHeavyIotaTreep(expr))
-			return tcIotaSimplifyDeepSpecial(expr);
-		if(iota != tcValue(tcCar(expdr))){
-			//i (x y) = x y S K as above
-			result = tcEvalIotaDefinitionStepLeak(expr);
-			return tcEvalStepCombineLeaks(
-				result,
-				tcIotaEvalStepLeak(tcCar(result))
-			);
-		}
-		//i (i x)
-		//i (i x) = i x S K
-		// = x S K S K
-		//if x is then i, I, 0, K, then we have a special form that's already been taken care of
-		//if x is equivalent to one of those or to S or (i S), then we would like to simplify it
+	if(iota == tcValue(expar))
+		return tcEvalIotaDefLeak(expr, expdr, result);
 
-		//TODO: recurse appropriately
-		//TODO: get and eval x=cddr expr
-		//TODO: collect S, K, S, K, x S, x S K, x S K S K
-		//TODO: can I use tcEvalIotaDefinitionStepLeak twice?
-		return nopLeak(expr);
-	}
 	if(!tcConsp(expar)){
 		//TODO: recurse cdrwise
 		return nopLeak(expr);
