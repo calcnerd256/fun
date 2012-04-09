@@ -7,15 +7,11 @@ struct byteArray *simpleCons(void *head, void *tail){
 	barrSetCdr(result, tail);
 	return result;
 }
-void barrSetCar(struct byteArray *cell, void* newCar){
-	(
-		(struct consCell*)(cell->arr)
-	)->head = newCar;
+void *barrSetCar(struct byteArray *cell, void* value){
+	return setCar((struct consCell*)(cell->arr), value);
 }
-void barrSetCdr(struct byteArray *cell, void* newCdr){
-	(
-		(struct consCell*)(cell->arr)
-	)->tail = newCdr;
+void *barrSetCdr(struct byteArray *cell, void* value){
+	return setCdr((struct consCell*)(cell->arr), value);
 }
 struct byteArray* bcar(struct byteArray *cell){
 	return (struct byteArray*)car(cell->arr);

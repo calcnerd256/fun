@@ -2,8 +2,8 @@
 #include "cons.h"
 
 struct byteArray *simpleCons(void*, void*);
-void barrSetCar(struct byteArray*, void*);
-void barrSetCdr(struct byteArray*, void*);
+void *barrSetCar(struct byteArray*, void*);
+void *barrSetCdr(struct byteArray*, void*);
 struct byteArray *bcar(struct byteArray*);
 struct byteArray *bcdr(struct byteArray*);
 
