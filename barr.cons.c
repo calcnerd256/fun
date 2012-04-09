@@ -3,10 +3,19 @@
 
 struct byteArray *simpleCons(void *head, void *tail){
 	struct byteArray *result = allocBarr(sizeof(struct consCell));
-	struct consCell *cell = (struct consCell*)(result->arr);
-	cell->head = head;
-	cell->tail = tail;
+	barrSetCar(result, head);
+	barrSetCdr(result, tail);
 	return result;
+}
+void barrSetCar(struct byteArray *cell, void* newCar){
+	(
+		(struct consCell*)(cell->arr)
+	)->head = newCar;
+}
+void barrSetCdr(struct byteArray *cell, void* newCdr){
+	(
+		(struct consCell*)(cell->arr)
+	)->tail = newCdr;
 }
 struct byteArray* bcar(struct byteArray *cell){
 	return (struct byteArray*)car(cell->arr);
