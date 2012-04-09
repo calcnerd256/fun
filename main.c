@@ -38,12 +38,6 @@ int badIotaEvalStep(struct byteArray* env){
   return 0;
 }
 
-void tcSetCar(struct byteArray *cons, void* newCar){
-	barrSetCar(
-		(struct byteArray*)tcValue(cons),
-		newCar
-	);
-}
 
 void tcPushCar(struct byteArray *xss, void* val){//mutates xss
 	tcSetCar(xss, tcCons(val, tcCar(xss)));

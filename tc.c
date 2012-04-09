@@ -26,6 +26,20 @@ void* tcValue(struct byteArray *tc){
 	return bcdr(tc);
 }
 
+struct byteArray* tcSetCar(struct byteArray *tc, struct byteArray* value){
+	struct byteArray* tcVal = (struct byteArray*)tcValue(tc);
+	if(!tcVal) return error;
+	if(error == tcVal) return error;
+	if(!tcConsp(tc)) return error;
+	return (struct byteArray*)barrSetCar(tcVal, value);
+}
+struct byteArray* tcSetCdr(struct byteArray *tc, struct byteArray* value){
+	struct byteArray* tcVal = (struct byteArray*)tcValue(tc);
+	if(!tcVal) return error;
+	if(error == tcVal) return error;
+	if(!tcConsp(tc)) return error;
+	return (struct byteArray*)barrSetCdr(tcVal, value);
+}
 struct byteArray* tcCar(struct byteArray *tc){
 	struct byteArray* tcVal = (struct byteArray*)tcValue(tc);
 	if(!tcVal) return 0;

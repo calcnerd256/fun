@@ -11,6 +11,8 @@ void* tcType(struct byteArray*);
 int tcConsp(struct byteArray*);
 int tcAtomp(struct byteArray*);
 void* tcValue(struct byteArray*);
+struct byteArray *tcSetCar(struct byteArray*, struct byteArray*);
+struct byteArray *tcSetCdr(struct byteArray*, struct byteArray*);
 struct byteArray *tcCar(struct byteArray*);
 struct byteArray *tcCdr(struct byteArray*);
 void freeTcCons(struct byteArray*);
