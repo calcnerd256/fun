@@ -48,6 +48,18 @@ int badIotaTest(struct byteArray *arfs){
 		env,
 		(void*)1
 	);
+	struct byteArray *pool = allocBarr(1024);
+	char* arena = pool->arr;
+	printf("%d at %p\n", (int)pool->size, arena);
+	struct byteArray *virta = (struct byteArray*)arena;
+	virta->size = sizeof(struct byteArray);
+	virta->arr = arena + sizeof(struct byteArray);
+	printf("v %d @ %p\n", (int)virta->size, virta->arr);
+	struct byteArray *virtb = (struct byteArray*)virta->arr;
+	virtb->size = 0;
+	virtb->arr = (char*)virtb + sizeof(struct byteArray);
+	freeBarr(pool);
+	freeBarr(allocBarr(0));
 	printf(" %d\n", (int)tcCar(tcCar(env)));
 	return 0;
 }
