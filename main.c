@@ -61,6 +61,9 @@ int badIotaTest(struct byteArray *arfs){
 	freeBarr(pool);
 	freeBarr(allocBarr(0));
 	printf(" %d\n", (int)tcCar(tcCar(env)));
+	freeTcCons(tcCar(env));
+	freeTcCons(tcCdr(env));
+	freeTcCons(env);
 	return 0;
 }
 

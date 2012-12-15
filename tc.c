@@ -66,15 +66,18 @@ void tcFreeTree(struct byteArray *tc){
 	struct byteArray* ptr;
 	stack = simpleCons(tc, stack);
 	while(stack){
+
+		//pop
 		tc = bcar(stack);
 		ptr = bcdr(stack);
 		freeBarr(stack);
 		stack = ptr;
+
 		if(tcConsp(tc)){
 			stack = simpleCons(tcCdr(tc), stack);
 			stack = simpleCons(tcCar(tc), stack);
 		}
-		freeBarr(tc);
+		(tcConsp(tc) ? freeTcCons : freeBarr)(tc);
 	}
 }
 
